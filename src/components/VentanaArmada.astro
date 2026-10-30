@@ -1,0 +1,310 @@
+---
+// Portada: una página de ejemplo "armándose" dentro de la ventana del logo.
+// Todo se mide en unidades del contenedor (--u = 1/520 del ancho), así la ventana
+// se achica como una imagen y se ve igual en celular y en escritorio.
+import { almacen } from '../data/negocios/almacen';
+import { precio, iniciales, fotoUrl } from '../lib/formato';
+
+const n = almacen;
+const c = n.colores;
+const productos = n.categorias.flatMap((cat) => cat.productos).slice(0, 3);
+---
+
+<div class="lienzo">
+  <a
+    href={`/demos/${n.slug}`}
+    class="ventana armando"
+    aria-label={`Ver la página de ejemplo completa de ${n.nombre}`}
+  >
+    <div class="barra pieza" style="--i: 0">
+      <span class="puntos" aria-hidden="true"><i class="azul"></i><i></i><i></i></span>
+      <span class="url">almacenlaesquina.cl</span>
+      <span class="nota nota-izq nota-tarde" style="--i: 7">Tu dominio .cl</span>
+    </div>
+
+    <div class="pagina" style={`background:${c.fondo};color:${c.texto}`}>
+      <div class="letrero pieza" style={`--i:1;background:${c.marca}`}>
+        <span class="nombre" style={`font-stretch:${n.ancho}%`}>{n.nombre}</span>
+      </div>
+      <div class="toldo pieza toldo-mini" style={`--i:1;--t1:${c.marca}`}></div>
+
+      <div class="portada pieza" style="--i: 2">
+        <span class="tipo">{n.tipo} en {n.comuna}</span>
+        <span class="bajada" style={`font-stretch:${n.ancho}%`}>{n.bajada}</span>
+        <span class="fila">
+          <span class="boton" style={`background:${c.marca}`}>Pedir por WhatsApp</span>
+          <span class="nota nota-izq nota-tarde" style="--i: 8">Pedidos por WhatsApp</span>
+        </span>
+      </div>
+
+      <div class="productos">
+        <span class="nota nota-abajo nota-tarde" style="--i: 9">Catálogo que actualizas tú</span>
+        <ul>
+          {
+            productos.map((p, i) => (
+              <li class="pieza" style={`--i:${3 + i}`}>
+                {p.foto ? (
+                  <img class="mono foto-mono" src={fotoUrl(p.foto.src, 120, 120)} alt="" width="40" height="40" loading="lazy" />
+                ) : (
+                  <span class="mono" style={`color:${c.marca};background:color-mix(in srgb, ${c.marca} 13%, #fff)`}>
+                    {iniciales(p.nombre)}
+                  </span>
+                )}
+                <span class="prod">
+                  {p.nombre}
+                  <small>{p.detalle}</small>
+                </span>
+                <span class="precio" style={`background:${c.acento}`}>
+                  {precio(p.precio)}
+                </span>
+                <span class="pedir" style={`background:${c.marca}`}>
+                  Pedir
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </a>
+</div>
+
+<style>
+  .lienzo {
+    container-type: inline-size;
+    padding: 0 3% 3% 0;
+  }
+  .ventana {
+    --u: calc(100cqw / 520);
+    display: block;
+    border: calc(var(--u) * 8) solid var(--color-tinta);
+    border-radius: calc(var(--u) * 28);
+    background: #fff;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: calc(var(--u) * 16) calc(var(--u) * 16) 0 var(--color-azul-claro);
+  }
+  .ventana:focus-visible {
+    outline-offset: 6px;
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--u) * 16);
+    height: calc(var(--u) * 50);
+    padding: 0 calc(var(--u) * 18);
+    border-bottom: calc(var(--u) * 8) solid var(--color-tinta);
+  }
+  .puntos {
+    display: flex;
+    gap: calc(var(--u) * 8);
+  }
+  .puntos i {
+    width: calc(var(--u) * 12);
+    height: calc(var(--u) * 12);
+    border-radius: 50%;
+    background: var(--color-tinta);
+  }
+  .puntos i.azul {
+    background: var(--color-azul);
+  }
+  .url {
+    padding: calc(var(--u) * 5) calc(var(--u) * 14);
+    border-radius: 999px;
+    background: var(--color-suave);
+    color: var(--color-gris);
+    font-size: calc(var(--u) * 14);
+    line-height: 1.2;
+  }
+
+  .letrero {
+    padding: calc(var(--u) * 18) calc(var(--u) * 24) calc(var(--u) * 10);
+  }
+  .letrero .nombre {
+    font-family: var(--font-negocio);
+    font-weight: 900;
+    font-size: calc(var(--u) * 27);
+    line-height: 1;
+    color: #fff;
+  }
+  .toldo-mini {
+    --r: calc(var(--u) * 9);
+    --t2: #fff;
+  }
+
+  .portada {
+    display: block;
+    padding: calc(var(--u) * 10) calc(var(--u) * 24) calc(var(--u) * 16);
+  }
+  .tipo {
+    display: block;
+    font-size: calc(var(--u) * 13);
+    opacity: 0.72;
+  }
+  .bajada {
+    display: block;
+    margin-top: calc(var(--u) * 6);
+    font-family: var(--font-negocio);
+    font-weight: 800;
+    font-size: calc(var(--u) * 26);
+    line-height: 1.02;
+  }
+  .fila {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--u) * 16);
+    margin-top: calc(var(--u) * 14);
+  }
+  .boton {
+    padding: calc(var(--u) * 9) calc(var(--u) * 16);
+    border-radius: calc(var(--u) * 9);
+    color: #fff;
+    font-weight: 700;
+    font-size: calc(var(--u) * 14);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .productos {
+    position: relative;
+    display: block;
+    padding: calc(var(--u) * 26) calc(var(--u) * 24) calc(var(--u) * 24);
+  }
+  .productos ul {
+    display: grid;
+    gap: calc(var(--u) * 9);
+  }
+  .productos li {
+    display: grid;
+    grid-template-columns: calc(var(--u) * 40) 1fr auto auto;
+    align-items: center;
+    gap: calc(var(--u) * 12);
+    padding: calc(var(--u) * 9) calc(var(--u) * 10);
+    border: 1px solid color-mix(in srgb, currentColor 13%, transparent);
+    border-radius: calc(var(--u) * 11);
+    background: #fff;
+  }
+  .mono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(var(--u) * 40);
+    border-radius: calc(var(--u) * 8);
+    font-family: var(--font-negocio);
+    font-weight: 900;
+    font-size: calc(var(--u) * 14);
+  }
+  .foto-mono {
+    width: 100%;
+    object-fit: cover;
+    background: color-mix(in srgb, currentColor 8%, #fff);
+  }
+  .prod {
+    font-weight: 700;
+    font-size: calc(var(--u) * 15);
+    line-height: 1.15;
+  }
+  .prod small {
+    display: block;
+    font-weight: 400;
+    font-size: calc(var(--u) * 12.5);
+    opacity: 0.7;
+  }
+  .precio {
+    padding: calc(var(--u) * 3) calc(var(--u) * 8);
+    border-radius: calc(var(--u) * 6);
+    font-weight: 700;
+    font-size: calc(var(--u) * 14);
+  }
+  .pedir {
+    padding: calc(var(--u) * 7) calc(var(--u) * 13);
+    border-radius: calc(var(--u) * 8);
+    color: #fff;
+    font-weight: 700;
+    font-size: calc(var(--u) * 13);
+  }
+
+  /* Notas que explican cada pieza. */
+  .nota {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--u) * 7);
+    padding: calc(var(--u) * 6) calc(var(--u) * 13) calc(var(--u) * 6) calc(var(--u) * 11);
+    border-radius: 999px;
+    background: var(--color-tinta);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: max(11px, calc(var(--u) * 14));
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .nota::before {
+    content: '';
+    width: calc(var(--u) * 8);
+    height: calc(var(--u) * 8);
+    border-radius: 50%;
+    background: #7aaad6;
+    flex-shrink: 0;
+  }
+  .nota::after {
+    content: '';
+    position: absolute;
+    border: calc(var(--u) * 6) solid transparent;
+  }
+  .nota-izq::after {
+    right: 100%;
+    top: 50%;
+    margin-top: calc(var(--u) * -6);
+    border-right-color: var(--color-tinta);
+  }
+  .barra .nota {
+    margin-left: auto;
+  }
+  .productos .nota {
+    position: absolute;
+    right: calc(var(--u) * 24);
+    top: calc(var(--u) * -2);
+  }
+  .nota-abajo::after {
+    top: 100%;
+    right: calc(var(--u) * 40);
+    border-top-color: var(--color-tinta);
+  }
+
+  /* Un solo momento de movimiento: la página se arma pieza por pieza al cargar. */
+  @media (prefers-reduced-motion: no-preference) {
+    .armando .pieza {
+      animation: armar 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      animation-delay: calc(0.25s + var(--i) * 0.14s);
+    }
+    .armando .nota-tarde {
+      animation: aparecer 0.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+      animation-delay: calc(0.35s + var(--i) * 0.14s);
+    }
+  }
+  @keyframes armar {
+    from {
+      opacity: 0;
+      transform: translateY(calc(var(--u) * 18));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+// Logo de TeLoArmo: ventana de navegador con una T + "TeLoArmo".
+interface Props {
+  claro?: boolean; // true: versión blanca para fondos oscuros
+  soloIcono?: boolean;
+  class?: string;
+}
+const { claro = false, soloIcono = false, class: clase = '' } = Astro.props;
+const tinta = claro ? '#fff' : '#16202e';
+const azul = claro ? '#fff' : '#2f6fa3';
+const fondo = claro ? 'none' : '#fff';
+---
+
+<span class:list={['inline-flex items-center gap-2.5', clase]}>
+  <svg width="36" height="31" viewBox="0 0 538 469" aria-hidden="true" class="shrink-0">
+    <rect x="17" y="17" width="504" height="435" rx="56" fill={fondo} stroke={tinta} stroke-width="34"></rect>
+    <rect x="17" y="115" width="504" height="34" fill={tinta}></rect>
+    <circle cx="91" cy="74" r="20" fill={azul}></circle>
+    <circle cx="148" cy="74" r="20" fill={tinta}></circle>
+    <circle cx="205" cy="74" r="20" fill={tinta}></circle>
+    <rect x="154" y="200" width="229" height="58" fill={tinta}></rect>
+    <rect x="240" y="258" width="57" height="137" fill={azul}></rect>
+  </svg>
+  {
+    !soloIcono && (
+      <span class="font-display text-[1.55rem] leading-none font-bold tracking-[-0.035em]">
+        <span style={`color:${tinta}`}>TeLo</span><span style={`color:${azul}`}>Armo</span>
+      </span>
+    )
+  }
+</span>

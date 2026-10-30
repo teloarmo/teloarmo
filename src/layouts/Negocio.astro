@@ -1,0 +1,221 @@
+---
+// Estructura común de las páginas de un negocio: aviso de demo, letrero con toldo,
+// navegación, pie de página y estilos con los colores del negocio.
+import Base from './Base.astro';
+import Icono from '../components/Icono.astro';
+import type { Negocio } from '../data/negocios/tipos';
+import { site } from '../data/site';
+import { waLink } from '../lib/formato';
+
+interface Props {
+  negocio: Negocio;
+  actual: 'inicio' | 'catalogo';
+  titulo?: string;
+}
+const { negocio: n, actual, titulo } = Astro.props;
+const c = n.colores;
+const base = `/demos/${n.slug}`;
+
+// En los ejemplos ficticios, todos los botones de WhatsApp llevan a TeLoArmo.
+const msgDemo = `Hola, vi el ejemplo de ${n.nombre} en ${site.nombre} y me gustaría una página así para mi negocio.`;
+const linkWa = waLink(n.ficticio ? site.whatsapp : n.whatsapp, n.ficticio ? msgDemo : 'Hola, tengo una consulta.');
+
+const nav = [
+  { href: `${base}/`, texto: 'Inicio', id: 'inicio' },
+  { href: `${base}/catalogo/`, texto: 'Catálogo', id: 'catalogo' },
+  { href: `${base}/#nosotros`, texto: 'Nosotros', id: '' },
+  { href: `${base}/#ubicacion`, texto: 'Ubicación', id: '' },
+];
+
+const vars = [
+  `--n-fondo:${c.fondo}`,
+  `--n-texto:${c.texto}`,
+  `--n-marca:${c.marca}`,
+  `--n-acento:${c.acento}`,
+  `--borde:color-mix(in srgb, ${c.texto} 14%, transparent)`,
+  `background:${c.fondo}`,
+  `color:${c.texto}`,
+].join(';');
+---
+
+<Base
+  title={titulo ? `${titulo} · ${n.nombre} (ejemplo)` : `${n.nombre} (ejemplo)`}
+  description={n.descripcion}
+  noindex
+  themeColor={c.marca}
+  bodyStyle={vars}
+>
+  {
+    n.ficticio && (
+      <div class="bg-tinta text-base text-white">
+        <div class="wrap flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-2.5">
+          <p>
+            Ejemplo con un negocio ficticio, armado por{' '}
+            <a href="/" class="font-bold underline underline-offset-4">
+              {site.nombre}
+            </a>
+            .
+          </p>
+          <a class="font-bold underline underline-offset-4" href={waLink(site.whatsapp, msgDemo)}>
+            Quiero una página así
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  <header style="background: var(--n-marca); color: #fff">
+    <div class="wrap flex items-center justify-between gap-4 pt-6 pb-3">
+      <a
+        href={`${base}/`}
+        class="font-negocio text-[clamp(1.6rem,4.2vw,2.4rem)] leading-none font-black"
+        style={`font-stretch:${n.ancho}%`}
+      >
+        {n.nombre}
+      </a>
+      <nav aria-label="Secciones" class="hidden md:block">
+        <ul class="flex items-center gap-7 font-bold">
+          {
+            nav.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  class="link-nav underline-offset-[6px]"
+                  aria-current={l.id === actual ? 'page' : undefined}
+                >
+                  {l.texto}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <a class="btn btn-sm shrink-0" style="background: #fff; color: var(--n-marca)" href={linkWa}>
+        <Icono nombre="chat" class="size-5" />
+        <span class="hidden sm:inline">WhatsApp</span>
+      </a>
+    </div>
+  </header>
+  <div class="toldo" style="--t1: var(--n-marca); --t2: #fff" aria-hidden="true"></div>
+
+  <nav aria-label="Secciones" class="wrap md:hidden">
+    <ul class="flex gap-2 overflow-x-auto pt-3 pb-1">
+      {
+        nav.map((l) => (
+          <li class="shrink-0">
+            <a
+              href={l.href}
+              class="pildora inline-block rounded-full border px-4 py-2 text-base font-bold"
+              aria-current={l.id === actual ? 'page' : undefined}
+            >
+              {l.texto}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="pie" style="background: var(--n-marca); color: #fff">
+    <div class="wrap grid gap-10 py-14 md:grid-cols-3">
+      <div>
+        <p class="font-negocio text-3xl leading-none font-black" style={`font-stretch:${n.ancho}%`}>{n.nombre}</p>
+        <p class="mt-3 max-w-[30ch] text-white/85">{n.bajada}</p>
+      </div>
+      <div>
+        <h2 class="font-bold">Horarios</h2>
+        <ul class="mt-2 space-y-1 text-white/85">
+          {
+            n.horarios.map((h) => (
+              <li>
+                {h.dias}: {h.horas}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h2 class="font-bold">Contacto</h2>
+        <p class="mt-2 text-white/85">{n.direccion}, {n.comuna}</p>
+        <a class="mt-2 inline-flex items-center gap-2 font-bold underline underline-offset-4" href={linkWa}>
+          <Icono nombre="chat" class="size-5" />
+          Escríbenos por WhatsApp
+        </a>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="flex flex-wrap justify-between gap-x-6 gap-y-1 border-t border-white/20 py-5 text-base text-white/75">
+        <p>
+          Página armada por <a href="/" class="font-bold text-white underline underline-offset-4">{site.nombre}</a>
+        </p>
+        <p>Fotos: Unsplash</p>
+      </div>
+    </div>
+  </footer>
+
+  <slot name="barra" />
+</Base>
+
+<style is:global>
+  /* Estilos que usan los colores de cada negocio (variables --n-*). */
+  .tenue {
+    color: color-mix(in srgb, var(--n-texto) 72%, var(--n-fondo));
+  }
+  .borde-t {
+    border-top: 1px solid var(--borde);
+  }
+  .panel {
+    border: 1px solid var(--borde);
+    background: color-mix(in srgb, #fff 75%, var(--n-fondo));
+  }
+  .banda {
+    background: color-mix(in srgb, var(--n-marca) 7%, var(--n-fondo));
+  }
+  .btn-demo {
+    background: var(--n-marca);
+    color: #fff;
+  }
+  .btn-demo:hover {
+    background: color-mix(in srgb, var(--n-marca) 85%, #000);
+  }
+  .btn-demo-linea {
+    border: 2px solid currentColor;
+  }
+  .btn-demo-linea:hover {
+    background: var(--n-marca);
+    border-color: var(--n-marca);
+    color: #fff;
+  }
+  .chip-precio {
+    background: var(--n-acento);
+    color: var(--n-texto);
+  }
+  .titulo-negocio {
+    font-family: var(--font-negocio);
+    font-weight: 800;
+    font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+    line-height: 1.02;
+  }
+  .link-nav[aria-current='page'],
+  .link-nav:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+  }
+  .pildora {
+    border-color: var(--borde);
+  }
+  .pildora[aria-current='page'] {
+    background: var(--n-marca);
+    border-color: var(--n-marca);
+    color: #fff;
+  }
+  .barra-movil {
+    background: color-mix(in srgb, var(--n-fondo) 94%, transparent);
+    border-top: 1px solid var(--borde);
+    backdrop-filter: blur(6px);
+  }
+</style>

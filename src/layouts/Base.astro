@@ -1,0 +1,53 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/atkinson-hyperlegible-next/wght.css';
+import '@fontsource-variable/space-grotesk/wght.css';
+import '../styles/global.css';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  themeColor?: string;
+  bodyClass?: string;
+  bodyStyle?: string;
+}
+
+const {
+  title,
+  description = site.descripcion,
+  noindex = false,
+  themeColor = '#ffffff',
+  bodyClass = '',
+  bodyStyle,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${site.nombre}` : `${site.nombre}: páginas web para negocios de barrio`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url);
+---
+
+<!doctype html>
+<html lang="es-CL">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content={themeColor} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.nombre} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="es_CL" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body class={bodyClass} style={bodyStyle}>
+    <slot />
+  </body>
+</html>

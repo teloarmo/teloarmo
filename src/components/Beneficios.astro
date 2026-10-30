@@ -1,0 +1,47 @@
+---
+import Icono from './Icono.astro';
+
+const beneficios = [
+  {
+    icono: 'buscar',
+    titulo: 'Te encuentran en Google',
+    texto: 'Cuando alguien busca un almacén o una ferretería cerca, aparece tu página con tu dirección, tus horarios y tus productos.',
+  },
+  {
+    icono: 'chat',
+    titulo: 'Menos preguntas repetidas',
+    texto: '¿A qué hora cierran? ¿Tienen despacho? La página responde por ti y tu WhatsApp queda para los pedidos.',
+  },
+  {
+    icono: 'lista',
+    titulo: 'Pedidos más ordenados',
+    texto: 'Tus clientes eligen del catálogo y el pedido te llega escrito por WhatsApp, listo para preparar.',
+  },
+  {
+    icono: 'llave',
+    titulo: 'Es tuya de verdad',
+    texto: 'El dominio, la página y las cuentas quedan a tu nombre. No nos pagas mensualidad.',
+  },
+] as const;
+---
+
+<section class="bg-suave py-20 lg:py-24">
+  <div class="wrap">
+    <h2 class="titulo max-w-[22ch]">Lo que cambia cuando tu negocio tiene página</h2>
+    <ul class="mt-12 grid gap-x-16 gap-y-10 md:grid-cols-2">
+      {
+        beneficios.map((b) => (
+          <li class="flex gap-5">
+            <span class="flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-azul">
+              <Icono nombre={b.icono} />
+            </span>
+            <div>
+              <h3 class="text-xl font-bold">{b.titulo}</h3>
+              <p class="mt-1.5 max-w-[38ch] text-gris">{b.texto}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

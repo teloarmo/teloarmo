@@ -1,0 +1,59 @@
+---
+// Imagen responsiva con proporción fija. Si no hay foto, muestra un bloque con las iniciales.
+import type { Foto } from '../../data/negocios/tipos';
+import { fotoUrl, fotoSrcset, iniciales } from '../../lib/formato';
+
+interface Props {
+  foto?: Foto;
+  proporcion?: number; // ancho / alto
+  sizes?: string;
+  anchos?: number[];
+  prioridad?: boolean; // true en la foto principal (carga inmediata)
+  respaldo?: string; // texto para las iniciales si no hay foto
+  class?: string;
+}
+
+const {
+  foto,
+  proporcion = 4 / 3,
+  sizes = '(min-width: 1024px) 33vw, 100vw',
+  anchos = [400, 800, 1200],
+  prioridad = false,
+  respaldo = '',
+  class: clase = '',
+} = Astro.props;
+
+const base = anchos[1] ?? anchos[0];
+---
+
+{
+  foto ? (
+    <img
+      src={fotoUrl(foto.src, base, Math.round(base / proporcion))}
+      srcset={fotoSrcset(foto.src, anchos, proporcion)}
+      sizes={sizes}
+      alt={foto.alt}
+      width={base}
+      height={Math.round(base / proporcion)}
+      loading={prioridad ? 'eager' : 'lazy'}
+      fetchpriority={prioridad ? 'high' : undefined}
+      decoding="async"
+      class:list={['foto block h-auto w-full object-cover', clase]}
+      style={`aspect-ratio:${proporcion}`}
+    />
+  ) : (
+    <div
+      class:list={['font-negocio flex w-full items-center justify-center text-3xl font-black', clase]}
+      style={`aspect-ratio:${proporcion};background:color-mix(in srgb, var(--n-marca) 12%, #fff);color:var(--n-marca)`}
+      aria-hidden="true"
+    >
+      {iniciales(respaldo)}
+    </div>
+  )
+}
+
+<style>
+  .foto {
+    background: color-mix(in srgb, var(--n-texto, #16202e) 8%, #fff);
+  }
+</style>

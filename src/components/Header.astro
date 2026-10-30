@@ -1,0 +1,41 @@
+---
+import Logo from './Logo.astro';
+import Icono from './Icono.astro';
+import { site } from '../data/site';
+import { waLink } from '../lib/formato';
+
+interface Props {
+  enInicio?: boolean; // en la página principal los links son anclas
+}
+const { enInicio = true } = Astro.props;
+const pre = enInicio ? '' : '/';
+const links = [
+  { href: `${pre}#como-trabajamos`, texto: 'Cómo trabajamos' },
+  { href: `${pre}#precios`, texto: 'Precios' },
+  { href: `${pre}#ejemplos`, texto: 'Ejemplos' },
+  { href: `${pre}#preguntas`, texto: 'Preguntas' },
+];
+---
+
+<header class="border-b border-linea">
+  <div class="wrap flex items-center justify-between gap-4 py-4">
+    <a href="/" aria-label={`${site.nombre}, ir al inicio`} class="rounded-md"><Logo /></a>
+    <nav aria-label="Principal" class="hidden lg:block">
+      <ul class="flex gap-7 text-[1.0625rem]">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} class="underline-offset-4 hover:underline">
+                {l.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <a class="btn btn-azul btn-sm" href={waLink(site.whatsapp, site.mensajeWhatsapp)}>
+      <Icono nombre="chat" class="size-5" />
+      <span>WhatsApp</span>
+    </a>
+  </div>
+</header>

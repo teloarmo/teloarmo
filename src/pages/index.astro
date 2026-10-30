@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Beneficios from '../components/Beneficios.astro';
+import Pasos from '../components/Pasos.astro';
+import Paquetes from '../components/Paquetes.astro';
+import Ejemplos from '../components/Ejemplos.astro';
+import Preguntas from '../components/Preguntas.astro';
+import Contacto from '../components/Contacto.astro';
+import Footer from '../components/Footer.astro';
+import { preguntas } from '../data/faq';
+---
+
+<Base>
+  <Header />
+  <main>
+    <Hero />
+    <Beneficios />
+    <Pasos />
+    <Paquetes />
+    <Ejemplos />
+    <section id="preguntas" class="bg-suave py-20 lg:py-24">
+      <div class="wrap grid gap-10 lg:grid-cols-[1fr_2fr]">
+        <h2 class="titulo max-w-[14ch]">Preguntas frecuentes</h2>
+        <Preguntas items={preguntas} />
+      </div>
+    </section>
+    <Contacto />
+  </main>
+  <Footer />
+</Base>

@@ -1,0 +1,57 @@
+---
+// Cada tarjeta se ve como la fachada de su negocio: letrero, toldo y una foto del local.
+import { ejemplos } from '../data/negocios';
+import { fotoUrl, fotoSrcset } from '../lib/formato';
+---
+
+<section id="ejemplos" class="py-20 lg:py-24">
+  <div class="wrap">
+    <h2 class="titulo max-w-[20ch]">Páginas de ejemplo</h2>
+    <p class="mt-4 max-w-[52ch] text-gris">
+      Son negocios ficticios para que veas cómo funciona: portada, catálogo y pedido por WhatsApp. La tuya la hacemos
+      con tu nombre, tus fotos y tus colores.
+    </p>
+
+    <ul class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        ejemplos.map((n) => (
+          <li>
+            <a
+              href={`/demos/${n.slug}/`}
+              class="group flex h-full flex-col overflow-hidden rounded-2xl border border-linea"
+              style={`background:${n.colores.fondo};color:${n.colores.texto}`}
+            >
+              <div class="px-6 pt-6 pb-4" style={`background:${n.colores.marca};color:#fff`}>
+                <p class="font-negocio text-[1.65rem] leading-none font-black" style={`font-stretch:${n.ancho}%`}>
+                  {n.nombre}
+                </p>
+              </div>
+              <div class="relative">
+                <img
+                  src={fotoUrl(n.fotos.portada.src, 600, 375)}
+                  srcset={fotoSrcset(n.fotos.portada.src, [400, 600, 900], 1.6)}
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  alt=""
+                  width="600"
+                  height="375"
+                  loading="lazy"
+                  decoding="async"
+                  class="block aspect-[1.6] w-full object-cover"
+                  style="background: color-mix(in srgb, currentColor 8%, #fff)"
+                />
+                <div class="toldo absolute inset-x-0 top-0" style={`--t1:${n.colores.marca};--t2:#fff`} />
+              </div>
+              <div class="flex flex-1 flex-col px-6 pt-4 pb-6">
+                <p class="text-base opacity-80">{n.tipo}</p>
+                <p class="mt-2 text-lg leading-snug font-bold">{n.bajada}</p>
+                <p class="mt-auto pt-5 font-bold underline decoration-2 underline-offset-4 group-hover:decoration-4">
+                  Ver ejemplo
+                </p>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,431 @@
+---
+// Catálogo de un negocio con "pedido": el cliente agrega productos y se abre WhatsApp
+// con el detalle, las cantidades y el total ya escritos.
+import Negocio from '../../../layouts/Negocio.astro';
+import Icono from '../../../components/Icono.astro';
+import Foto from '../../../components/negocio/Foto.astro';
+import { negocios, type Negocio as TNegocio } from '../../../data/negocios';
+import { site } from '../../../data/site';
+import { precio } from '../../../lib/formato';
+
+export function getStaticPaths() {
+  return negocios.map((negocio) => ({ params: { slug: negocio.slug }, props: { negocio } }));
+}
+
+interface Props {
+  negocio: TNegocio;
+}
+const { negocio: n } = Astro.props;
+const total = n.categorias.reduce((s, c) => s + c.productos.length, 0);
+
+// Textos del mensaje de WhatsApp: "este pedido", "esta lista", "este encargo".
+const sustantivo = n.pedido.titulo.replace(/^Tu\s+/i, '');
+const este = `${sustantivo === 'lista' ? 'esta' : 'este'} ${sustantivo}`;
+const intro = n.ficticio
+  ? `Hola, armé ${este} de prueba en el ejemplo de ${n.nombre} en ${site.nombre} y me gustaría una página así para mi negocio:`
+  : sustantivo === 'lista'
+    ? `Hola, quiero cotizar esta lista en ${n.nombre}:`
+    : `Hola, quiero hacer ${este} en ${n.nombre}:`;
+
+// Datos que usa el script del pedido.
+const config = {
+  slug: n.slug,
+  numero: n.ficticio ? site.whatsapp : n.whatsapp,
+  intro,
+  titulo: n.pedido.titulo,
+};
+---
+
+<Negocio negocio={n} actual="catalogo" titulo="Catálogo">
+  <div id="catalogo" data-config={JSON.stringify(config)}>
+    <section class="wrap pt-8 pb-6 lg:pt-12">
+      <h1 class="font-negocio text-[clamp(2.4rem,5vw,3.6rem)] leading-none font-extrabold" style={`font-stretch:${n.ancho}%`}>
+        Catálogo
+      </h1>
+      <p class="tenue mt-3 max-w-[56ch] text-lg">
+        {total} productos. Agrega lo que necesites y envía {n.pedido.titulo.toLowerCase()} por WhatsApp con un toque.
+      </p>
+      {
+        n.ficticio && (
+          <p class="chip-precio mt-4 inline-block rounded-lg px-3 py-2 text-base">
+            Es un ejemplo: pruébalo. El mensaje de prueba le llega a {site.nombre}, no a un negocio real.
+          </p>
+        )
+      }
+    </section>
+
+    <div class="wrap pb-36 lg:grid lg:grid-cols-[17rem_1fr] lg:gap-12 lg:pb-24">
+      <aside>
+        <div class="space-y-6 lg:sticky lg:top-6">
+          <div>
+            <label for="buscar" class="sr-only">Buscar productos</label>
+            <div class="panel flex items-center gap-2 rounded-xl px-4">
+              <Icono nombre="buscar" class="size-5 shrink-0 opacity-70" />
+              <input
+                id="buscar"
+                type="search"
+                placeholder="Buscar productos"
+                autocomplete="off"
+                class="min-h-12 w-full bg-transparent text-lg outline-none"
+              />
+            </div>
+          </div>
+
+          <nav aria-label="Categorías" class="hidden lg:block">
+            <h2 class="font-bold">Categorías</h2>
+            <ul class="mt-2">
+              {
+                n.categorias.map((cat) => (
+                  <li>
+                    <a href={`#${cat.id}`} class="cat-lateral flex justify-between gap-3 rounded-lg px-3 py-2">
+                      <span>{cat.nombre}</span>
+                      <span class="tenue">{cat.productos.length}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+
+          <div class="panel hidden rounded-2xl p-5 lg:block">
+            <h2 class="font-negocio text-xl font-extrabold" style={`font-stretch:${n.ancho}%`}>{n.pedido.titulo}</h2>
+            <p id="lateral-vacio" class="tenue mt-2 text-base">
+              Todavía está vacío. Toca «{n.pedido.agregar}» en los productos que necesites.
+            </p>
+            <ul id="lateral-lista" class="mt-3 space-y-1.5 text-base"></ul>
+            <div id="lateral-acciones" hidden>
+              <p class="mt-4 flex justify-between border-t pt-3 font-bold" style="border-color: var(--borde)">
+                <span>Total</span><span id="lateral-total"></span>
+              </p>
+              <a id="lateral-enviar" class="btn btn-demo mt-4 w-full" href="#" target="_blank" rel="noopener">
+                <Icono nombre="chat" class="size-5" />
+                {n.pedido.enviar}
+              </a>
+              <button type="button" id="lateral-vaciar" class="mt-2 w-full py-1.5 text-base underline underline-offset-4">Vaciar</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div>
+    <nav aria-label="Categorías" class="filtros sticky top-0 z-10 -mx-5 mt-4 px-5 md:-mx-8 md:px-8 lg:hidden">
+      <ul class="flex gap-2 overflow-x-auto py-3">
+        {
+          n.categorias.map((cat) => (
+            <li class="shrink-0">
+              <a href={`#${cat.id}`} class="pildora inline-block rounded-full border px-4 py-2 text-base font-bold">
+                {cat.nombre}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+      <p id="sin-resultados" class="tenue py-10 text-lg" hidden>
+        No encontramos productos con ese nombre. Prueba con otra palabra o escríbenos.
+      </p>
+      {
+        n.categorias.map((cat) => (
+          <section id={cat.id} class="categoria pt-10">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 class="titulo-negocio" style={`font-stretch:${n.ancho}%`}>
+                {cat.nombre}
+              </h2>
+              <p class="tenue">{cat.descripcion}</p>
+            </div>
+            <ul class="mt-6 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
+              {cat.productos.map((p) => (
+                <li
+                  id={p.id}
+                  class="producto panel flex flex-col overflow-hidden rounded-2xl"
+                  data-buscar={`${p.nombre} ${p.detalle ?? ''} ${cat.nombre}`}
+                >
+                  <Foto
+                    foto={p.foto}
+                    proporcion={4 / 3}
+                    sizes="(min-width: 1024px) 20vw, (min-width: 768px) 30vw, 50vw"
+                    anchos={[300, 500, 800]}
+                    respaldo={p.nombre}
+                  />
+                  <div class="flex flex-1 flex-col p-3 sm:p-4">
+                    <h3 class="leading-snug font-bold">{p.nombre}</h3>
+                    {p.detalle && <p class="tenue text-base">{p.detalle}</p>}
+                    <p class="mt-auto pt-3">
+                      <span class="chip-precio rounded-md px-2 py-0.5 font-bold">{precio(p.precio)}</span>
+                    </p>
+                    <div class="control mt-3" data-id={p.id} data-nombre={p.nombre} data-detalle={p.detalle ?? ''} data-precio={p.precio}>
+                      <button type="button" class="agregar btn btn-sm btn-demo w-full">
+                        {n.pedido.agregar}
+                      </button>
+                      <div class="stepper hidden items-center justify-between gap-2 rounded-xl border-2 p-1" style="border-color: var(--n-marca)">
+                        <button type="button" class="menos flex size-9 items-center justify-center rounded-lg text-xl font-bold" aria-label={`Quitar uno de ${p.nombre}`}>
+                          −
+                        </button>
+                        <span class="cantidad font-bold" aria-live="polite">1</span>
+                        <button type="button" class="mas btn-demo flex size-9 items-center justify-center rounded-lg text-xl font-bold" aria-label={`Agregar uno más de ${p.nombre}`}>
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+      </div>
+    </div>
+
+    <!-- Barra del pedido -->
+    <div id="barra-pedido" class="barra-movil fixed inset-x-0 bottom-0 z-20 lg:hidden" hidden>
+      <div class="wrap flex items-center justify-between gap-4 py-3">
+        <p class="leading-tight">
+          <span class="font-bold">{n.pedido.titulo}</span>
+          <span id="resumen" class="tenue block text-base"></span>
+        </p>
+        <button type="button" id="abrir-pedido" class="btn btn-demo shrink-0">Revisar y enviar</button>
+      </div>
+    </div>
+
+    <dialog id="pedido" class="pedido m-auto w-[min(100%-2rem,32rem)] rounded-2xl p-0" aria-labelledby="pedido-titulo">
+      <div class="flex items-center justify-between gap-4 border-b p-5" style="border-color: var(--borde)">
+        <h2 id="pedido-titulo" class="font-negocio text-2xl font-extrabold" style={`font-stretch:${n.ancho}%`}>
+          {n.pedido.titulo}
+        </h2>
+        <button type="button" id="cerrar-pedido" class="rounded-lg px-3 py-1 font-bold underline underline-offset-4">Cerrar</button>
+      </div>
+      <ul id="lista-pedido" class="max-h-[50vh] overflow-y-auto px-5"></ul>
+      <div class="border-t p-5" style="border-color: var(--borde)">
+        <p class="flex justify-between text-lg">
+          <span class="font-bold">Total</span>
+          <span id="total-pedido" class="font-bold"></span>
+        </p>
+        <p class="tenue mt-1 text-base">{n.pedido.nota}</p>
+        <a id="enviar-pedido" class="btn btn-demo mt-4 w-full" href="#" target="_blank" rel="noopener">
+          <Icono nombre="chat" class="size-5" />
+          {n.pedido.enviar}
+        </a>
+        <button type="button" id="vaciar-pedido" class="mt-3 w-full py-2 text-base underline underline-offset-4">Vaciar</button>
+      </div>
+    </dialog>
+    <p id="aviso" class="sr-only" aria-live="polite"></p>
+  </div>
+</Negocio>
+
+<style>
+  .filtros {
+    background: color-mix(in srgb, var(--n-fondo) 94%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--borde);
+  }
+  .categoria {
+    scroll-margin-top: 4.5rem;
+  }
+  .producto {
+    scroll-margin-top: 5.5rem;
+  }
+  .producto:target {
+    outline: 3px solid var(--n-marca);
+    outline-offset: 2px;
+  }
+  .cat-lateral:hover {
+    background: color-mix(in srgb, var(--n-marca) 8%, transparent);
+  }
+  .stepper .menos {
+    background: color-mix(in srgb, var(--n-marca) 10%, #fff);
+    color: var(--n-marca);
+  }
+  .pedido {
+    background: var(--n-fondo);
+    color: var(--n-texto);
+  }
+  .pedido::backdrop {
+    background: rgba(10, 14, 20, 0.55);
+  }
+  #lista-pedido > li + li {
+    border-top: 1px solid var(--borde);
+  }
+</style>
+
+<script>
+  type Item = { id: string; nombre: string; detalle: string; precio: number; cantidad: number };
+
+  const raiz = document.getElementById('catalogo')!;
+  const cfg = JSON.parse(raiz.dataset.config!) as {
+    slug: string;
+    numero: string;
+    intro: string;
+    titulo: string;
+  };
+  const clave = `pedido-${cfg.slug}`;
+  const clp = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
+  const plata = (v: number) => clp.format(v).replace(/\s/g, '');
+
+  let pedido = new Map<string, Item>();
+  try {
+    const guardado = JSON.parse(localStorage.getItem(clave) ?? '[]') as Item[];
+    guardado.forEach((it) => pedido.set(it.id, it));
+  } catch {
+    // Sin almacenamiento disponible: el pedido vive solo mientras la página esté abierta.
+  }
+
+  const guardar = () => {
+    try {
+      localStorage.setItem(clave, JSON.stringify([...pedido.values()]));
+    } catch {
+      /* nada */
+    }
+  };
+
+  const barra = document.getElementById('barra-pedido')!;
+  const resumen = document.getElementById('resumen')!;
+  const dialogo = document.getElementById('pedido') as HTMLDialogElement;
+  const lista = document.getElementById('lista-pedido')!;
+  const totalEl = document.getElementById('total-pedido')!;
+  const enviar = document.getElementById('enviar-pedido') as HTMLAnchorElement;
+  const aviso = document.getElementById('aviso')!;
+  const latVacio = document.getElementById('lateral-vacio')!;
+  const latLista = document.getElementById('lateral-lista')!;
+  const latAcciones = document.getElementById('lateral-acciones')!;
+  const latTotal = document.getElementById('lateral-total')!;
+  const latEnviar = document.getElementById('lateral-enviar') as HTMLAnchorElement;
+
+  const mensaje = () => {
+    const lineas = [...pedido.values()].map(
+      (it) => `- ${it.cantidad} x ${it.nombre}${it.detalle ? ` (${it.detalle})` : ''}: ${plata(it.precio * it.cantidad)}`,
+    );
+    const total = [...pedido.values()].reduce((s, it) => s + it.precio * it.cantidad, 0);
+    return [cfg.intro, ...lineas, `Total: ${plata(total)}`].join('\n');
+  };
+
+  const pintar = () => {
+    const items = [...pedido.values()];
+    const unidades = items.reduce((s, it) => s + it.cantidad, 0);
+    const total = items.reduce((s, it) => s + it.precio * it.cantidad, 0);
+
+    // Botones de cada producto
+    document.querySelectorAll<HTMLElement>('.control').forEach((ctrl) => {
+      const it = pedido.get(ctrl.dataset.id!);
+      ctrl.querySelector('.agregar')!.classList.toggle('hidden', !!it);
+      const stepper = ctrl.querySelector('.stepper')!;
+      stepper.classList.toggle('hidden', !it);
+      stepper.classList.toggle('flex', !!it);
+      if (it) ctrl.querySelector('.cantidad')!.textContent = String(it.cantidad);
+    });
+
+    // Barra inferior
+    barra.hidden = unidades === 0;
+    resumen.textContent = `${unidades} ${unidades === 1 ? 'producto' : 'productos'} · ${plata(total)}`;
+
+    // Detalle en el diálogo
+    lista.innerHTML = '';
+    items.forEach((it) => {
+      const li = document.createElement('li');
+      li.className = 'flex items-center justify-between gap-3 py-3';
+      const texto = document.createElement('span');
+      texto.className = 'leading-snug';
+      texto.textContent = `${it.cantidad} x ${it.nombre}`;
+      const valor = document.createElement('span');
+      valor.className = 'shrink-0 font-bold';
+      valor.textContent = plata(it.precio * it.cantidad);
+      li.append(texto, valor);
+      lista.append(li);
+    });
+    totalEl.textContent = plata(total);
+    enviar.href = `https://wa.me/${cfg.numero.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje())}`;
+
+    // Resumen lateral (escritorio)
+    latVacio.hidden = items.length > 0;
+    latAcciones.hidden = items.length === 0;
+    latLista.innerHTML = '';
+    items.forEach((it) => {
+      const li = document.createElement('li');
+      li.className = 'flex justify-between gap-3';
+      const texto = document.createElement('span');
+      texto.textContent = `${it.cantidad} x ${it.nombre}`;
+      const valor = document.createElement('span');
+      valor.className = 'shrink-0';
+      valor.textContent = plata(it.precio * it.cantidad);
+      li.append(texto, valor);
+      latLista.append(li);
+    });
+    latTotal.textContent = plata(total);
+    latEnviar.href = enviar.href;
+    guardar();
+  };
+
+  const cambiar = (ctrl: HTMLElement, delta: number) => {
+    const id = ctrl.dataset.id!;
+    const actual = pedido.get(id);
+    const cantidad = (actual?.cantidad ?? 0) + delta;
+    if (cantidad <= 0) {
+      pedido.delete(id);
+      aviso.textContent = `Quitaste ${ctrl.dataset.nombre}.`;
+    } else {
+      pedido.set(id, {
+        id,
+        nombre: ctrl.dataset.nombre!,
+        detalle: ctrl.dataset.detalle ?? '',
+        precio: Number(ctrl.dataset.precio),
+        cantidad,
+      });
+      aviso.textContent = `${ctrl.dataset.nombre}: ${cantidad} en ${cfg.titulo.toLowerCase()}.`;
+    }
+    pintar();
+  };
+
+  document.querySelectorAll<HTMLElement>('.control').forEach((ctrl) => {
+    ctrl.querySelector('.agregar')!.addEventListener('click', () => {
+      cambiar(ctrl, 1);
+      (ctrl.querySelector('.mas') as HTMLButtonElement).focus();
+    });
+    ctrl.querySelector('.mas')!.addEventListener('click', () => cambiar(ctrl, 1));
+    ctrl.querySelector('.menos')!.addEventListener('click', () => {
+      const quedaVacio = (pedido.get(ctrl.dataset.id!)?.cantidad ?? 0) <= 1;
+      cambiar(ctrl, -1);
+      if (quedaVacio) (ctrl.querySelector('.agregar') as HTMLButtonElement).focus();
+    });
+  });
+
+  document.getElementById('abrir-pedido')!.addEventListener('click', () => dialogo.showModal());
+  document.getElementById('cerrar-pedido')!.addEventListener('click', () => dialogo.close());
+  dialogo.addEventListener('click', (e) => {
+    if (e.target === dialogo) dialogo.close();
+  });
+  const vaciar = () => {
+    pedido = new Map();
+    pintar();
+    if (dialogo.open) dialogo.close();
+    aviso.textContent = 'Vaciaste el pedido.';
+  };
+  document.getElementById('vaciar-pedido')!.addEventListener('click', vaciar);
+  document.getElementById('lateral-vaciar')!.addEventListener('click', vaciar);
+
+  // Buscador
+  const quitarTildes = (s: string) =>
+    s
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase();
+  const buscar = document.getElementById('buscar') as HTMLInputElement;
+  const sinResultados = document.getElementById('sin-resultados')!;
+  buscar.addEventListener('input', () => {
+    const q = quitarTildes(buscar.value.trim());
+    let visibles = 0;
+    document.querySelectorAll<HTMLElement>('.categoria').forEach((sec) => {
+      let enSeccion = 0;
+      sec.querySelectorAll<HTMLElement>('.producto').forEach((p) => {
+        const ok = !q || quitarTildes(p.dataset.buscar ?? '').includes(q);
+        p.hidden = !ok;
+        if (ok) enSeccion++;
+      });
+      sec.hidden = enSeccion === 0;
+      visibles += enSeccion;
+    });
+    sinResultados.hidden = visibles > 0;
+  });
+
+  pintar();
+</script>
