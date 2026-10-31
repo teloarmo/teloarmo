@@ -16,20 +16,20 @@ const desde = Math.min(...paquetes.map((p) => p.desde));
   <div class="cuadricula absolute inset-0 -z-10" aria-hidden="true"></div>
   <div class="brillo absolute -z-10" aria-hidden="true"></div>
 
-  <div class="wrap grid items-center gap-16 pt-12 pb-20 md:pt-16 lg:grid-cols-[1.08fr_1fr] lg:gap-12 lg:pt-20 lg:pb-28">
+  <div class="wrap grid items-center gap-12 pt-10 pb-16 sm:gap-16 sm:pb-20 md:pt-16 lg:grid-cols-[1.08fr_1fr] lg:gap-12 lg:pt-20 lg:pb-28">
     <div>
       <p class="chip inline-flex items-center gap-2 rounded-full py-1.5 pr-3.5 pl-1.5 text-[0.95rem]">
         <span class="flex size-7 items-center justify-center rounded-full bg-tinta text-white"><Icono nombre="chispa" class="size-4" /></span>
         ¿Sin web? <strong class="font-bold">Te lo armo.</strong>
       </p>
-      <h1 class="display mt-6 text-[clamp(2.7rem,5.2vw,4.6rem)] leading-[1]">
+      <h1 class="display mt-6 text-[clamp(2.25rem,5.2vw,4.6rem)] leading-[1.02]">
         Más clientes para tu negocio, <span class="degradado">desde internet.</span>
       </h1>
-      <p class="mt-7 max-w-[36rem] text-[1.25rem] leading-relaxed text-tinta/80">
+      <p class="mt-6 max-w-[36rem] text-lg leading-relaxed sm:mt-7 sm:text-[1.25rem] text-tinta/80">
         Creamos la página web de tu negocio para que te encuentren en Google, te escriban por WhatsApp y te compren o
         reserven a cualquier hora. Te la entregamos funcionando y a tu nombre.
       </p>
-      <div class="mt-9 flex flex-wrap gap-3">
+      <div class="mt-8 flex flex-wrap gap-3 sm:mt-9">
         <a class="btn btn-azul" href={waLink(site.whatsapp, site.mensajeWhatsapp)}>
           <Icono nombre="chat" class="size-5" />
           Quiero más clientes
@@ -39,7 +39,7 @@ const desde = Math.min(...paquetes.map((p) => p.desde));
           <Icono nombre="flecha" class="size-5" />
         </a>
       </div>
-      <ul class="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-base text-tinta/80">
+      <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2.5 text-base sm:mt-10 text-tinta/80">
         <li class="flex items-center gap-2"><Icono nombre="check" class="size-5 text-azul" /> Apareces en Google y Maps</li>
         <li class="flex items-center gap-2"><Icono nombre="check" class="size-5 text-azul" /> Pedidos y reservas por WhatsApp</li>
         <li class="flex items-center gap-2"><Icono nombre="check" class="size-5 text-azul" /> Desde {precio(desde)}, sin mensualidades</li>

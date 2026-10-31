@@ -12,17 +12,17 @@ const puntos: { icono: NombreIcono; titulo: string; texto: string }[] = [
   { icono: 'codigo', titulo: 'Hecha a medida', texto: 'Nada de plantillas genéricas: código propio, diseñado para tu rubro.' },];
 ---
 
-<section class="tecnologia relative isolate overflow-hidden py-24 text-white lg:py-32">
+<section class="tecnologia relative isolate overflow-hidden py-16 sm:py-24 text-white lg:py-32">
   <div class="cuadricula absolute inset-0 -z-10" style="--linea-cuadricula: rgb(255 255 255 / 0.05)" aria-hidden="true"></div>
-  <div class="wrap grid gap-16 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-    <div>
+  <div class="wrap grid gap-12 sm:gap-16 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+    <div class="min-w-0">
       <p class="antetitulo revelar text-[#8fbde3]!">Tecnología</p>
       <h2 class="titulo revelar mt-4 max-w-[18ch]">Lo último en tecnología web, sin que tengas que entenderlo.</h2>
-      <p class="revelar mt-5 max-w-[50ch] text-[1.2rem] text-white/70">
+      <p class="revelar mt-5 max-w-[50ch] text-lg text-white/70 sm:text-[1.2rem]">
         Somos desarrolladores. Usamos las mismas herramientas modernas que las empresas grandes, y nos encargamos de
         todo lo técnico por ti.
       </p>
-      <ul class="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+      <ul class="mt-10 grid gap-x-10 gap-y-7 sm:mt-12 sm:grid-cols-2 sm:gap-y-8">
         {
           puntos.map((p, i) => (
             <li class="revelar flex gap-4" style={`--retraso:${(i % 2) * 90}ms`}>
@@ -39,7 +39,7 @@ const puntos: { icono: NombreIcono; titulo: string; texto: string }[] = [
       </ul>
     </div>
 
-    <figure class="revelar">
+    <figure class="revelar min-w-0">
       <div class="codigo overflow-hidden rounded-2xl">
         <div class="flex items-center gap-3 border-b border-white/10 px-4 py-3">
           <span class="flex gap-1.5" aria-hidden="true">
@@ -49,7 +49,7 @@ const puntos: { icono: NombreIcono; titulo: string; texto: string }[] = [
           </span>
           <span class="font-mono text-xs text-white/50">tu-negocio.cl / index.html</span>
         </div>
-        <pre class="overflow-x-auto p-5 font-mono text-[0.82rem] leading-relaxed sm:text-sm"><code><span class="c-gris">&lt;!-- Así le explicamos tu negocio a Google --&gt;</span>
+        <pre class="overflow-x-auto p-4 font-mono text-[0.72rem] leading-relaxed whitespace-pre-wrap break-words sm:p-5 sm:text-sm sm:whitespace-pre"><code><span class="c-gris">&lt;!-- Así le explicamos tu negocio a Google --&gt;</span>
 <span class="c-azul">&lt;script</span> <span class="c-celeste">type</span>=<span class="c-verde">"application/ld+json"</span><span class="c-azul">&gt;</span>
 {'{'}
   <span class="c-celeste">"@type"</span>: <span class="c-verde">"HardwareStore"</span>,
