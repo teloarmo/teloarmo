@@ -102,5 +102,4 @@ export const panaderia: Negocio = {
     { p: '¿Puedo pedir una torta personalizada?', r: 'Sí. Escríbenos por WhatsApp con la idea, el tamaño y la fecha, y te cotizamos.' },
   ],
   ficticio: true,
-  listado: true,
 };

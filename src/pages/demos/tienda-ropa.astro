@@ -1,0 +1,423 @@
+---
+// Ejemplo: tienda de ropa. Cada prenda se agrega con su talla a la bolsa,
+// y la bolsa se envía por WhatsApp para coordinar el pedido.
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import Demo from '../../layouts/Demo.astro';
+import Icono from '../../components/Icono.astro';
+import Foto from '../../components/negocio/Foto.astro';
+import Carro from '../../components/demo/Carro.astro';
+import { introDemo } from '../../data/demos';
+import { site } from '../../data/site';
+import { precio } from '../../lib/formato';
+
+const nombre = 'Casa Lino';
+const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
+const F = {
+  portada: foto('1445205170230-053b83016050', 'Percha con chaquetas y sweaters en tonos tierra'),
+  editorial: foto('1490481651871-ab68de25d43d', 'Prendas claras colgadas en un perchero minimalista'),
+  tienda: foto('1441986300917-64674bd600d8', 'Interior de la tienda con repisas de ropa doblada'),
+  poncho: foto('1434389677669-e08b4cac3105', 'Poncho tejido color crudo colgado en una percha'),
+  bomber: foto('1591047139829-d91aecb6caea', 'Chaqueta bomber color terracota'),
+  jogger: foto('1594633312681-425c7b97ccd1', 'Pantalón jogger rosado sobre fondo blanco'),
+  polera: foto('1618354691373-d851c5c3a990', 'Polera negra de algodón en una percha'),
+  poleron: foto('1620799140408-edc6dcb6d633', 'Polerón blanco de algodón doblado sobre una mesa'),
+  jeans: foto('1542272604-787c3835535d', 'Jeans azules doblados'),
+  gorro: foto('1556905055-8f358a7a47b2', 'Gorro de lana naranjo junto a un jeans y un sweater'),
+  rayas: foto('1525507119028-ed4c629a60a3', 'Polera a rayas rojas y blancas junto a un jeans'),
+  i1: foto('1515886657613-9f3515b0c78f', 'Persona con conjunto deportivo amarillo'),
+  i2: foto('1483985988355-763728e1935b', 'Mujer con bolsas de compras y abrigo burdeo'),
+  i3: foto('1529139574466-a303027c1d8b', 'Mujer con sweater rojo y anteojos de sol'),
+  verdes: foto('1523381210434-271e8be1f52b', 'Poleras verdes colgadas en perchas de madera'),
+};
+
+const TALLAS = ['XS', 'S', 'M', 'L', 'XL'];
+const productos = [
+  { id: 'poncho', nombre: 'Poncho tejido Ralún', color: 'Crudo', precio: 34990, foto: F.poncho, nuevo: true, tallas: ['Única'] },
+  { id: 'bomber', nombre: 'Chaqueta bomber Ercilla', color: 'Terracota', precio: 49990, foto: F.bomber, nuevo: true, tallas: TALLAS },
+  { id: 'poleron', nombre: 'Polerón algodón orgánico', color: 'Blanco', precio: 29990, foto: F.poleron, tallas: TALLAS },
+  { id: 'jeans', nombre: 'Jeans recto clásico', color: 'Azul medio', precio: 32990, foto: F.jeans, tallas: ['38', '40', '42', '44', '46'] },
+  { id: 'polera', nombre: 'Polera básica pima', color: 'Negro', precio: 12990, foto: F.polera, tallas: TALLAS },
+  { id: 'jogger', nombre: 'Jogger felpa suave', color: 'Rosa palo', precio: 24990, foto: F.jogger, nuevo: true, tallas: TALLAS },
+  { id: 'rayas', nombre: 'Polera marinera', color: 'Rojo y blanco', precio: 15990, foto: F.rayas, tallas: TALLAS },
+  { id: 'gorro', nombre: 'Gorro lana merino', color: 'Naranjo', precio: 14990, foto: F.gorro, tallas: ['Única'] },
+];
+const categorias = [
+  { nombre: 'Tejidos', foto: F.gorro },
+  { nombre: 'Abrigos', foto: F.i2 },
+  { nombre: 'Pantalones', foto: F.i1 },
+  { nombre: 'Sweaters', foto: F.i3 },
+];
+const valores = ['Algodón orgánico', 'Lana merino', 'Hecho en Chile', 'Cambios en 30 días', 'Envíos a todo el país'];
+
+const datos = {
+  '@type': 'ClothingStore',
+  name: nombre,
+  address: { '@type': 'PostalAddress', streetAddress: 'Dirección de ejemplo 456', addressLocality: 'Ñuñoa', addressCountry: 'CL' },
+  openingHours: ['Mo-Sa 11:00-20:00'],
+};
+---
+
+<Demo
+  nombre={nombre}
+  rubro="Tienda de ropa"
+  descripcion="Ropa de algodón y lana hecha en Chile. Prendas simples, hechas para durar. Envíos a todo el país y cambios en 30 días."
+  themeColor="#f6f2ec"
+  bodyClass="ropa"
+  datos={datos}
+>
+  <p class="bg-[var(--r-tinta)] py-2.5 text-center text-[0.7rem] tracking-[0.22em] text-[var(--r-fondo)] uppercase">
+    Envío gratis sobre $49.990 · Cambios hasta 30 días
+  </p>
+
+  <header class="cabecera">
+    <div class="cont grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-4">
+      <nav aria-label="Secciones">
+        <ul class="hidden gap-7 text-[0.8rem] tracking-[0.14em] uppercase md:flex">
+          <li><a href="#coleccion" class="subrayado">Nuevo</a></li>
+          <li><a href="#categorias" class="subrayado">Categorías</a></li>
+          <li><a href="#historia" class="subrayado">Historia</a></li>
+          <li><a href="#tienda" class="subrayado">Tienda</a></li>
+        </ul>
+      </nav>
+      <a href="#" class="serif text-[2.1rem] leading-none tracking-[-0.01em]">Casa Lino</a>
+      <div class="flex items-center justify-end gap-1">
+        <a href="#coleccion" class="rounded-full p-2.5 hover:bg-black/5" aria-label="Buscar"><Icono nombre="buscar" class="size-5" /></a>
+        <button type="button" data-carro-abrir class="relative rounded-full p-2.5 hover:bg-black/5" aria-label="Abrir la bolsa">
+          <Icono nombre="bolsa" class="size-5" />
+          <span data-carro-cuenta hidden class="absolute top-0.5 right-0.5 flex size-4.5 items-center justify-center rounded-full bg-[var(--r-terracota)] text-[0.65rem] font-semibold text-white">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Portada -->
+    <section class="grid lg:min-h-[min(calc(100svh-7.5rem),52rem)] lg:grid-cols-2">
+      <div class="cont flex flex-col justify-end py-14 lg:py-20 lg:pr-16">
+        <p class="text-[0.75rem] tracking-[0.24em] text-[var(--r-tenue)] uppercase">Colección otoño · invierno 2026</p>
+        <h1 class="serif mt-6 text-[clamp(3.4rem,7.4vw,7rem)] leading-[0.92] tracking-[-0.02em]">
+          Prendas simples, hechas para <em class="text-[var(--r-terracota)]">durar.</em>
+        </h1>
+        <p class="mt-7 max-w-[40ch] text-lg leading-relaxed text-[var(--r-tenue)]">
+          Algodón orgánico y lana merino, cortados y cosidos en talleres de Santiago. Ropa para usar todos los días, por
+          muchos años.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center gap-6">
+          <a href="#coleccion" class="boton">Ver la colección</a>
+          <a href="#historia" class="subrayado text-sm tracking-[0.14em] uppercase">Nuestra historia</a>
+        </div>
+      </div>
+      <div class="relative min-h-[min(60svh,36rem)] overflow-hidden">
+        <Foto foto={F.portada} proporcion={4 / 5} prioridad sizes="(min-width: 1024px) 50vw, 100vw" anchos={[700, 1100, 1500]} class="absolute inset-0 h-full!" />
+        <p class="absolute bottom-6 left-6 rounded-full bg-[var(--r-fondo)]/90 px-4 py-2 text-xs tracking-[0.12em] uppercase backdrop-blur">
+          Tejidos de lana · Nueva colección
+        </p>
+      </div>
+    </section>
+
+    <!-- Cinta -->
+    <div class="cinta overflow-hidden border-y border-[var(--r-linea)] py-4" aria-label={valores.join(', ')}>
+      <div class="cinta-pista flex w-max gap-10" aria-hidden="true">
+        {
+          [...valores, ...valores, ...valores, ...valores].map((v) => (
+            <span class="serif flex items-center gap-10 text-2xl whitespace-nowrap italic">
+              {v} <span class="text-[var(--r-terracota)] not-italic">✦</span>
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Categorías -->
+    <section id="categorias" class="cont py-20 lg:py-28">
+      <ul class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+        {
+          categorias.map((c) => (
+            <li>
+              <a href="#coleccion" class="group block">
+                <div class="overflow-hidden bg-[var(--r-papel)]">
+                  <Foto foto={c.foto} proporcion={3 / 4} sizes="(min-width: 768px) 25vw, 50vw" anchos={[300, 500, 800]} class="transition duration-700 group-hover:scale-105" />
+                </div>
+                <p class="mt-3 flex items-center justify-between">
+                  <span class="serif text-2xl">{c.nombre}</span>
+                  <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" />
+                </p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Colección -->
+    <section id="coleccion" class="cont pb-20 lg:pb-28">
+      <div class="flex flex-wrap items-end justify-between gap-4 border-b border-[var(--r-linea)] pb-6">
+        <h2 class="serif text-[clamp(2.6rem,5vw,4rem)] leading-none">Nuevos ingresos</h2>
+        <p class="text-sm text-[var(--r-tenue)]">{productos.length} prendas · elige tu talla y agrégala a la bolsa</p>
+      </div>
+      <ul class="mt-10 grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6 lg:grid-cols-4">
+        {
+          productos.map((p) => (
+            <li class="prenda flex flex-col">
+              <div class="relative overflow-hidden bg-[var(--r-papel)]">
+                <Foto foto={p.foto} proporcion={3 / 4} sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" anchos={[300, 500, 800]} class="transition duration-700 hover:scale-105" />
+                {p.nuevo && <span class="absolute top-3 left-3 bg-[var(--r-fondo)] px-2 py-1 text-[0.65rem] tracking-[0.16em] uppercase">Nuevo</span>}
+              </div>
+              <div class="mt-4 flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-medium leading-snug">{p.nombre}</h3>
+                  <p class="text-sm text-[var(--r-tenue)]">{p.color}</p>
+                </div>
+                <p class="font-medium whitespace-nowrap">{precio(p.precio)}</p>
+              </div>
+              <fieldset class="tallas mt-3">
+                <legend class="sr-only">Talla de {p.nombre}</legend>
+                <div class="flex flex-wrap gap-1.5">
+                  {p.tallas.map((t) => (
+                    <label class="talla">
+                      <input type="radio" name={`talla-${p.id}`} value={t} class="sr-only" checked={p.tallas.length === 1} />
+                      {t}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <button type="button" class="agregar mt-3" data-carro-agregar data-id={p.id} data-nombre={p.nombre} data-detalle={p.color} data-precio={p.precio} data-talla={`talla-${p.id}`}>
+                Agregar a la bolsa
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Historia -->
+    <section id="historia" class="bg-[var(--r-papel)]">
+      <div class="grid lg:grid-cols-2">
+        <div class="relative min-h-[min(55svh,36rem)]">
+          <Foto foto={F.editorial} proporcion={1} sizes="(min-width: 1024px) 50vw, 100vw" anchos={[700, 1100, 1500]} class="absolute inset-0 h-full!" />
+        </div>
+        <div class="cont flex flex-col justify-center py-20 lg:px-20 lg:py-28">
+          <p class="text-[0.75rem] tracking-[0.24em] text-[var(--r-tenue)] uppercase">Desde 2019</p>
+          <h2 class="serif mt-5 text-[clamp(3rem,6vw,5.5rem)] leading-[0.9]">Menos, <em>pero mejor.</em></h2>
+          <p class="mt-7 max-w-[46ch] text-lg leading-relaxed text-[var(--r-tenue)]">
+            Casa Lino nació en una mesa de corte en Ñuñoa. Hacemos pocas prendas por temporada, con telas naturales y
+            costuras reforzadas, para que tu ropa dure años y no meses.
+          </p>
+          <dl class="mt-10 grid grid-cols-3 gap-6 border-t border-[var(--r-linea)] pt-8">
+            <div><dt class="serif text-4xl">100%</dt><dd class="mt-1 text-sm text-[var(--r-tenue)]">fibras naturales</dd></div>
+            <div><dt class="serif text-4xl">12</dt><dd class="mt-1 text-sm text-[var(--r-tenue)]">talleres locales</dd></div>
+            <div><dt class="serif text-4xl">30</dt><dd class="mt-1 text-sm text-[var(--r-tenue)]">días para cambios</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tienda física -->
+    <section id="tienda" class="cont grid items-center gap-12 py-20 lg:grid-cols-[1fr_1.2fr] lg:gap-20 lg:py-28">
+      <div>
+        <p class="text-[0.75rem] tracking-[0.24em] text-[var(--r-tenue)] uppercase">Tienda</p>
+        <h2 class="serif mt-5 text-[clamp(2.6rem,5vw,4rem)] leading-none">Pruébatela en Ñuñoa</h2>
+        <p class="mt-6 max-w-[42ch] text-lg leading-relaxed text-[var(--r-tenue)]">
+          Compra online y retira gratis en la tienda, o ven a probarte la colección completa. Te ayudamos con la talla.
+        </p>
+        <dl class="mt-8 space-y-3">
+          <div class="flex gap-3"><dt><Icono nombre="pin" class="mt-0.5 size-5" /></dt><dd>Dirección de ejemplo 456, Ñuñoa</dd></div>
+          <div class="flex gap-3"><dt><Icono nombre="reloj" class="mt-0.5 size-5" /></dt><dd>Lunes a sábado, 11:00 a 20:00</dd></div>
+          <div class="flex gap-3"><dt><Icono nombre="camion" class="mt-0.5 size-5" /></dt><dd>Envíos a todo Chile en 2 a 4 días hábiles</dd></div>
+        </dl>
+      </div>
+      <div class="overflow-hidden bg-[var(--r-papel)]">
+        <Foto foto={F.tienda} proporcion={4 / 3} sizes="(min-width: 1024px) 55vw, 100vw" anchos={[600, 1000, 1400]} />
+      </div>
+    </section>
+
+    <!-- Instagram -->
+    <section class="pb-20 lg:pb-28">
+      <div class="cont flex items-end justify-between gap-4">
+        <h2 class="serif text-[clamp(2rem,4vw,3rem)] leading-none">Así se usa</h2>
+        <a href="#" class="subrayado flex items-center gap-2 text-sm tracking-[0.12em] uppercase"><Icono nombre="instagram" class="size-4" /> @casalino</a>
+      </div>
+      <ul class="mt-8 grid grid-cols-3 gap-1 md:grid-cols-6">
+        {
+          [F.verdes, F.rayas, F.jeans, F.tienda, F.poleron, F.editorial].map((f) => (
+            <li class="overflow-hidden"><Foto foto={f} proporcion={1} sizes="(min-width: 768px) 17vw, 33vw" anchos={[200, 400, 600]} class="transition duration-700 hover:scale-105" /></li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+
+  <footer class="bg-[var(--r-tinta)] text-[var(--r-fondo)]">
+    <div class="cont grid gap-10 py-16 md:grid-cols-[2fr_1fr_1fr]">
+      <div>
+        <p class="serif text-6xl leading-none">Casa Lino</p>
+        <p class="mt-4 max-w-[34ch] text-[var(--r-fondo)]/70">Ropa de fibras naturales, hecha en Chile para durar.</p>
+      </div>
+      <div>
+        <h2 class="text-xs tracking-[0.2em] text-[var(--r-fondo)]/60 uppercase">Ayuda</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>Envíos y retiro</li>
+          <li>Cambios y devoluciones</li>
+          <li>Guía de tallas</li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-xs tracking-[0.2em] text-[var(--r-fondo)]/60 uppercase">Contacto</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>WhatsApp</li>
+          <li>Instagram</li>
+          <li>Dirección de ejemplo 456, Ñuñoa</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cont border-t border-white/10 py-6 text-sm text-[var(--r-fondo)]/60">
+      Página armada por <a href="/" class="text-[var(--r-fondo)] underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash
+    </div>
+  </footer>
+
+  <Carro
+    titulo="Tu bolsa"
+    enviar="Pedir por WhatsApp"
+    nota="Te confirmamos stock, envío y forma de pago por WhatsApp."
+    vacio="Tu bolsa está vacía. Elige una talla y agrega tus prendas favoritas."
+    intro={introDemo(nombre, 'bolsa')}
+    numero={site.whatsapp}
+    clave="bolsa-casa-lino"
+    abrirAlAgregar
+  />
+</Demo>
+
+<style is:global>
+  .ropa {
+    --r-fondo: #f6f2ec;
+    --r-papel: #ebe4d8;
+    --r-tinta: #1c1a17;
+    --r-tenue: #6b645b;
+    --r-linea: #ddd5c8;
+    --r-terracota: #b4532a;
+    --c-fondo: var(--r-fondo);
+    --c-texto: var(--r-tinta);
+    --c-marca: var(--r-tinta);
+    --c-sobre-marca: var(--r-fondo);
+    --c-linea: var(--r-linea);
+    --c-radio: 0;
+    background: var(--r-fondo);
+    color: var(--r-tinta);
+    font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+  }
+  .ropa [id] {
+    scroll-margin-top: 5rem;
+  }
+  .ropa .cont {
+    width: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .ropa .cont {
+      padding-inline: 2.5rem;
+    }
+  }
+  .ropa .serif {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+  }
+  .ropa .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--r-fondo) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--r-linea);
+  }
+  .ropa .subrayado {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+    padding-bottom: 2px;
+    transition: background-size 0.3s;
+  }
+  .ropa .subrayado:hover {
+    background-size: 0 1px;
+    background-position: 100% 100%;
+  }
+  .ropa .boton {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3.25rem;
+    padding: 0.85rem 2rem;
+    background: var(--r-tinta);
+    color: var(--r-fondo);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+  }
+  .ropa .boton:hover {
+    background: var(--r-terracota);
+  }
+  .ropa .talla {
+    display: flex;
+    min-width: 2.4rem;
+    height: 2.1rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--r-linea);
+    font-size: 0.8rem;
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+  }
+  .ropa .talla:hover {
+    border-color: var(--r-tinta);
+  }
+  .ropa .talla:has(input:checked) {
+    background: var(--r-tinta);
+    border-color: var(--r-tinta);
+    color: var(--r-fondo);
+  }
+  .ropa .talla:has(input:focus-visible) {
+    outline: 2px solid var(--r-terracota);
+    outline-offset: 2px;
+  }
+  .ropa .tallas.falta-talla .talla {
+    border-color: var(--r-terracota);
+    animation: sacudir 0.35s;
+  }
+  @keyframes sacudir {
+    25% {
+      transform: translateX(-3px);
+    }
+    75% {
+      transform: translateX(3px);
+    }
+  }
+  .ropa .agregar {
+    min-height: 2.75rem;
+    border: 1px solid var(--r-tinta);
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .ropa .agregar:hover {
+    background: var(--r-tinta);
+    color: var(--r-fondo);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ropa .cinta-pista {
+      animation: deslizar 40s linear infinite;
+    }
+  }
+  @keyframes deslizar {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

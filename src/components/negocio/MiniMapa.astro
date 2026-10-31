@@ -2,21 +2,34 @@
 // Mapa de referencia para las páginas de ejemplo. En la página real de un cliente
 // se reemplaza por el mapa de Google (Compartir > Insertar un mapa).
 interface Props {
-  color: string;
+  color: string; // marcador
   nombre: string;
+  fondo?: string;
+  calles?: string;
+  parque?: string;
+  avenida?: string;
+  class?: string;
 }
-const { color, nombre } = Astro.props;
+const {
+  color,
+  nombre,
+  fondo = '#e4e6dd',
+  calles = '#fff',
+  parque = '#b7d6b2',
+  avenida = '#f3dc8a',
+  class: clase = 'rounded-2xl',
+} = Astro.props;
 ---
 
 <svg
   viewBox="0 0 560 300"
-  class="block h-auto w-full rounded-2xl"
+  class:list={['block h-auto w-full', clase]}
   role="img"
   aria-label={`Mapa de referencia con la ubicación de ${nombre}`}
 >
-  <rect width="560" height="300" fill="#e4e6dd"></rect>
-  <rect x="330" y="176" width="130" height="98" rx="8" fill="#b7d6b2"></rect>
-  <g stroke="#fff" fill="none">
+  <rect width="560" height="300" fill={fondo}></rect>
+  <rect x="330" y="176" width="130" height="98" rx="8" fill={parque}></rect>
+  <g stroke={calles} fill="none">
     <path d="M0 80H560" stroke-width="14"></path>
     <path d="M0 160H560" stroke-width="16"></path>
     <path d="M0 286H560" stroke-width="12"></path>
@@ -24,7 +37,7 @@ const { color, nombre } = Astro.props;
     <path d="M310 0V300" stroke-width="16"></path>
     <path d="M480 0V300" stroke-width="12"></path>
   </g>
-  <path d="M-10 250L570 30" stroke="#f3dc8a" stroke-width="20" fill="none"></path>
+  <path d="M-10 250L570 30" stroke={avenida} stroke-width="20" fill="none"></path>
   <ellipse cx="226" cy="150" rx="8" ry="3" fill="#000" opacity="0.2"></ellipse>
   <g transform="translate(226 150) scale(1.4)">
     <path d="M0 0C-6-9-15-17-15-29a15 15 0 1 1 30 0C15-17 6-9 0 0Z" fill={color}></path>

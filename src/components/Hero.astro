@@ -1,37 +1,200 @@
 ---
-import VentanaArmada from './VentanaArmada.astro';
+// Portada: el mensaje de crecimiento y una escena con páginas reales armadas por nosotros
+// (capturas de los ejemplos) y los avisos que recibe el negocio cuando la página trabaja.
+import { Image } from 'astro:assets';
 import Icono from './Icono.astro';
 import { site } from '../data/site';
 import { paquetes } from '../data/paquetes';
 import { waLink, precio } from '../lib/formato';
+import barberia from '../assets/ejemplos/barberia.webp';
+import cabanasMovil from '../assets/ejemplos/cabanas-movil.webp';
 
 const desde = Math.min(...paquetes.map((p) => p.desde));
 ---
 
-<section class="wrap grid items-center gap-12 pt-10 pb-16 md:pt-16 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:pb-24">
-  <div>
-    <h1 class="display">
-      <span class="block text-[clamp(1.7rem,3.2vw,2.4rem)] font-medium tracking-[-0.02em]">¿Sin web?</span>
-      <span class="mt-1 block text-[clamp(3.6rem,9.5vw,7rem)]">Te lo armo.</span>
-    </h1>
-    <p class="mt-7 max-w-[34rem] text-[1.25rem] leading-relaxed">
-      Armamos la página web de tu almacén, panadería o ferretería: tu catálogo, tus horarios y un botón para que te
-      pidan por WhatsApp. Te la entregamos funcionando y queda a tu nombre.
-    </p>
-    <div class="mt-8 flex flex-wrap gap-3">
-      <a class="btn btn-azul" href={waLink(site.whatsapp, site.mensajeWhatsapp)}>
-        <Icono nombre="chat" class="size-5" />
-        Escríbenos por WhatsApp
-      </a>
-      <a class="btn btn-linea" href="#ejemplos">Ver ejemplos</a>
-    </div>
-    <p class="mt-6 text-base text-gris">Pago único desde {precio(desde)}. Sin mensualidades con nosotros.</p>
-  </div>
+<section class="relative isolate overflow-hidden">
+  <div class="cuadricula absolute inset-0 -z-10" aria-hidden="true"></div>
+  <div class="brillo absolute -z-10" aria-hidden="true"></div>
 
-  <figure>
-    <VentanaArmada />
-    <figcaption class="mt-3 text-base text-gris">
-      Así queda una página armada por nosotros. Tócala para ver el ejemplo completo.
-    </figcaption>
-  </figure>
+  <div class="wrap grid items-center gap-16 pt-12 pb-20 md:pt-16 lg:grid-cols-[1.08fr_1fr] lg:gap-12 lg:pt-20 lg:pb-28">
+    <div>
+      <p class="chip inline-flex items-center gap-2 rounded-full py-1.5 pr-3.5 pl-1.5 text-[0.95rem]">
+        <span class="flex size-7 items-center justify-center rounded-full bg-tinta text-white"><Icono nombre="chispa" class="size-4" /></span>
+        ¿Sin web? <strong class="font-bold">Te lo armo.</strong>
+      </p>
+      <h1 class="display mt-6 text-[clamp(2.7rem,5.2vw,4.6rem)] leading-[1]">
+        Más clientes para tu negocio, <span class="degradado">desde internet.</span>
+      </h1>
+      <p class="mt-7 max-w-[36rem] text-[1.25rem] leading-relaxed text-tinta/80">
+        Creamos la página web de tu negocio para que te encuentren en Google, te escriban por WhatsApp y te compren o
+        reserven a cualquier hora. Te la entregamos funcionando y a tu nombre.
+      </p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a class="btn btn-azul" href={waLink(site.whatsapp, site.mensajeWhatsapp)}>
+          <Icono nombre="chat" class="size-5" />
+          Quiero más clientes
+        </a>
+        <a class="btn btn-linea" href="#ejemplos">
+          Ver ejemplos
+          <Icono nombre="flecha" class="size-5" />
+        </a>
+      </div>
+      <ul class="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-base text-tinta/80">
+        <li class="flex items-center gap-2"><Icono nombre="check" class="size-5 text-azul" /> Apareces en Google y Maps</li>
+        <li class="flex items-center gap-2"><Icono nombre="check" class="size-5 text-azul" /> Pedidos y reservas por WhatsApp</li>
+        <li class="flex items-center gap-2"><Icono nombre="check" class="size-5 text-azul" /> Desde {precio(desde)}, sin mensualidades</li>
+      </ul>
+    </div>
+
+    <figure class="escena relative mx-auto w-full max-w-[40rem] pb-10 lg:pb-0">
+      <a href="/demos/barberia/" class="navegador block" aria-label="Ver la página de ejemplo de Filo Barbería">
+        <span class="flex items-center gap-3 px-4 py-3" aria-hidden="true">
+          <span class="flex gap-1.5">
+            <i class="size-2.5 rounded-full bg-[#ff5f57]"></i>
+            <i class="size-2.5 rounded-full bg-[#febc2e]"></i>
+            <i class="size-2.5 rounded-full bg-[#28c840]"></i>
+          </span>
+          <span class="flex flex-1 items-center gap-1.5 rounded-md bg-suave px-2.5 py-1 text-xs text-gris">
+            <Icono nombre="candado" class="size-3" /> filobarberia.cl
+          </span>
+        </span>
+        <Image
+          src={barberia}
+          alt="Página de ejemplo de una barbería armada por TeLoArmo"
+          widths={[560, 840, 1120]}
+          sizes="(min-width: 1024px) 40rem, 92vw"
+          loading="eager"
+          fetchpriority="high"
+          class="block aspect-[16/10.5] w-full object-cover object-top"
+        />
+      </a>
+
+      <a href="/demos/cabanas/" class="telefono absolute -bottom-2 -left-3 w-[31%] sm:-left-8 lg:-bottom-10" aria-label="Ver la página de ejemplo de Refugio Los Coihues">
+        <Image
+          src={cabanasMovil}
+          alt="Página de ejemplo de unas cabañas vista en un celular"
+          widths={[240, 400]}
+          sizes="13rem"
+          class="block aspect-[390/800] w-full rounded-[1.35rem] object-cover object-top"
+        />
+      </a>
+
+      <div class="aviso aviso-1 absolute top-[16%] -right-2 hidden w-[17rem] sm:flex lg:-right-10" style="--retraso: 0.9s">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#25d366] text-white"><Icono nombre="chat" class="size-5" /></span>
+        <span class="min-w-0 text-sm leading-snug">
+          <span class="flex justify-between gap-2 font-bold">Nueva reserva <span class="font-normal text-gris">ahora</span></span>
+          <span class="block truncate text-gris">Corte + barba · sábado 11:30</span>
+        </span>
+      </div>
+
+      <div class="aviso aviso-2 absolute right-[6%] bottom-[14%] hidden w-[16.5rem] sm:flex lg:-right-6" style="--retraso: 1.3s">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-azul-claro text-azul"><Icono nombre="pin" class="size-5" /></span>
+        <span class="min-w-0 text-sm leading-snug">
+          <span class="block font-bold">Te encontraron en Google</span>
+          <span class="flex items-center gap-1 text-gris">
+            <span class="flex text-[#f5b400]">{[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-3 fill-current" />)}</span>
+            4,9 · Abierto ahora
+          </span>
+        </span>
+      </div>
+
+      <div class="aviso aviso-3 absolute -top-9 left-[6%] hidden w-[15rem] lg:flex" style="--retraso: 1.7s">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-tinta text-white"><Icono nombre="bolsa" class="size-5" /></span>
+        <span class="min-w-0 text-sm leading-snug">
+          <span class="block font-bold">Pedido por WhatsApp</span>
+          <span class="block text-gris">3 productos · $76.970</span>
+        </span>
+      </div>
+      <figcaption class="sr-only">Páginas de ejemplo armadas por TeLoArmo y los avisos que recibe el negocio.</figcaption>
+    </figure>
+  </div>
 </section>
+
+<style>
+  .brillo {
+    top: -18rem;
+    right: -12rem;
+    width: 52rem;
+    height: 40rem;
+    background:
+      radial-gradient(closest-side, rgb(47 111 163 / 0.22), transparent),
+      radial-gradient(closest-side at 30% 70%, rgb(122 170 214 / 0.18), transparent);
+    filter: blur(10px);
+  }
+  .chip {
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    box-shadow: 0 6px 18px -12px rgb(22 32 46 / 0.4);
+  }
+  .degradado {
+    background: linear-gradient(95deg, var(--color-azul) 10%, #4f93c9 60%, #2a5f8c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .navegador {
+    overflow: hidden;
+    border: 1px solid var(--color-linea);
+    border-radius: 1.1rem;
+    background: #fff;
+    box-shadow:
+      0 2px 4px rgb(22 32 46 / 0.04),
+      0 40px 80px -40px rgb(22 32 46 / 0.55);
+  }
+  .telefono {
+    padding: 0.4rem;
+    border-radius: 1.75rem;
+    background: var(--color-tinta);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08) inset,
+      0 30px 60px -20px rgb(22 32 46 / 0.6);
+  }
+  .aviso {
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgb(215 222 230 / 0.8);
+    border-radius: 1rem;
+    background: rgb(255 255 255 / 0.92);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px -18px rgb(22 32 46 / 0.4);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .navegador,
+    .telefono {
+      animation: subir 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .telefono {
+      animation-delay: 0.25s;
+    }
+    .aviso {
+      animation:
+        aparecer 0.6s cubic-bezier(0.3, 1.3, 0.5, 1) both,
+        flotar 6s ease-in-out infinite;
+      animation-delay: var(--retraso), calc(var(--retraso) + 0.6s);
+    }
+    .aviso-2 {
+      animation-duration: 0.6s, 7s;
+    }
+    .aviso-3 {
+      animation-duration: 0.6s, 8s;
+    }
+  }
+  @keyframes subir {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.92);
+    }
+  }
+  @keyframes flotar {
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+</style>

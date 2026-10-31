@@ -10,22 +10,23 @@ interface Props {
 const { enInicio = true } = Astro.props;
 const pre = enInicio ? '' : '/';
 const links = [
+  { href: `${pre}#crecer`, texto: 'Qué logramos' },
+  { href: `${pre}#ejemplos`, texto: 'Ejemplos' },
   { href: `${pre}#como-trabajamos`, texto: 'Cómo trabajamos' },
   { href: `${pre}#precios`, texto: 'Precios' },
-  { href: `${pre}#ejemplos`, texto: 'Ejemplos' },
   { href: `${pre}#preguntas`, texto: 'Preguntas' },
 ];
 ---
 
-<header class="border-b border-linea">
-  <div class="wrap flex items-center justify-between gap-4 py-4">
+<header class="cabecera sticky top-0 z-50">
+  <div class="wrap flex items-center justify-between gap-4 py-3.5">
     <a href="/" aria-label={`${site.nombre}, ir al inicio`} class="rounded-md"><Logo /></a>
     <nav aria-label="Principal" class="hidden lg:block">
-      <ul class="flex gap-7 text-[1.0625rem]">
+      <ul class="flex gap-1 text-base">
         {
           links.map((l) => (
             <li>
-              <a href={l.href} class="underline-offset-4 hover:underline">
+              <a href={l.href} class="rounded-full px-3.5 py-2 text-tinta/80 transition-colors hover:bg-suave hover:text-tinta">
                 {l.texto}
               </a>
             </li>
@@ -35,7 +36,15 @@ const links = [
     </nav>
     <a class="btn btn-azul btn-sm" href={waLink(site.whatsapp, site.mensajeWhatsapp)}>
       <Icono nombre="chat" class="size-5" />
-      <span>WhatsApp</span>
+      <span>Hablemos</span>
     </a>
   </div>
 </header>
+
+<style>
+  .cabecera {
+    background: rgb(255 255 255 / 0.8);
+    backdrop-filter: saturate(1.6) blur(14px);
+    border-bottom: 1px solid rgb(215 222 230 / 0.7);
+  }
+</style>

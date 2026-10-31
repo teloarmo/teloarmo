@@ -5,7 +5,7 @@ export const site = {
   url: 'https://teloarmo.cl', // TODO: confirmar el dominio
   frase: '¿Sin web? Te lo armo.',
   descripcion:
-    'Armamos la página web de tu almacén, panadería o ferretería: catálogo, horarios y pedidos por WhatsApp. Te la entregamos funcionando, a tu nombre y sin mensualidades.',
+    'Páginas web que hacen crecer tu negocio: te encuentran en Google, te escriben por WhatsApp y te compran o reservan a cualquier hora. Te la entregamos funcionando, a tu nombre y sin mensualidades.',
 
   // TODO: reemplazar por el número real de WhatsApp Business, solo dígitos (ej: 56912345678).
   whatsapp: '56900000000',
@@ -13,7 +13,7 @@ export const site = {
 
   // Opcionales: si quedan vacíos, el botón o link no se muestra.
   correo: '', // TODO: hola@teloarmo.cl cuando el correo esté creado
-  agendaUrl: '', // TODO: link de Cal.com o Calendly para la reunión de 20 minutos
+  agendaUrl: '', // TODO: link de Cal.com o Calendly para la videollamada de 20 minutos
   instagram: '', // TODO: link de Instagram
 
   anio: 2026,

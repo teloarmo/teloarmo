@@ -3,9 +3,10 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Beneficios from '../components/Beneficios.astro';
+import Ejemplos from '../components/Ejemplos.astro';
+import Tecnologia from '../components/Tecnologia.astro';
 import Pasos from '../components/Pasos.astro';
 import Paquetes from '../components/Paquetes.astro';
-import Ejemplos from '../components/Ejemplos.astro';
 import Preguntas from '../components/Preguntas.astro';
 import Contacto from '../components/Contacto.astro';
 import Footer from '../components/Footer.astro';
@@ -13,20 +14,41 @@ import { preguntas } from '../data/faq';
 ---
 
 <Base>
+  <script slot="head" is:inline>
+    document.documentElement.classList.add('js');
+  </script>
   <Header />
   <main>
     <Hero />
     <Beneficios />
+    <Ejemplos />
+    <Tecnologia />
     <Pasos />
     <Paquetes />
-    <Ejemplos />
-    <section id="preguntas" class="bg-suave py-20 lg:py-24">
+    <section id="preguntas" class="py-24 lg:py-32">
       <div class="wrap grid gap-10 lg:grid-cols-[1fr_2fr]">
-        <h2 class="titulo max-w-[14ch]">Preguntas frecuentes</h2>
-        <Preguntas items={preguntas} />
+        <div class="revelar">
+          <p class="antetitulo">Preguntas</p>
+          <h2 class="titulo mt-4 max-w-[14ch]">Preguntas frecuentes</h2>
+        </div>
+        <div class="revelar" style="--retraso: 100ms"><Preguntas items={preguntas} /></div>
       </div>
     </section>
     <Contacto />
   </main>
   <Footer />
 </Base>
+
+<script>
+  // Las secciones con .revelar aparecen suavemente al entrar en pantalla.
+  const observador = new IntersectionObserver(
+    (entradas) =>
+      entradas.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('visible');
+        observador.unobserve(e.target);
+      }),
+    { rootMargin: '0px 0px -8% 0px' },
+  );
+  document.querySelectorAll('.revelar').forEach((el) => observador.observe(el));
+</script>

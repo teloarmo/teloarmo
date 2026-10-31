@@ -1,0 +1,76 @@
+---
+// Estructura de las páginas de ejemplo con diseño propio (src/pages/demos/*.astro):
+// franja de aviso de TeLoArmo arriba y datos estructurados del negocio para Google.
+import Base from './Base.astro';
+import Logo from '../components/Logo.astro';
+import { site } from '../data/site';
+import { waLink } from '../lib/formato';
+
+interface Props {
+  nombre: string;
+  rubro: string;
+  descripcion: string;
+  themeColor: string;
+  bodyClass?: string;
+  bodyStyle?: string;
+  datos?: Record<string, unknown>; // schema.org del negocio (LocalBusiness, etc.)
+}
+const { nombre, rubro, descripcion, themeColor, bodyClass, bodyStyle, datos } = Astro.props;
+const msg = `Hola, vi el ejemplo de ${nombre} (${rubro.toLowerCase()}) en ${site.nombre} y me gustaría una página así para mi negocio.`;
+---
+
+<Base title={`${nombre} · ejemplo de ${rubro.toLowerCase()}`} description={descripcion} noindex {themeColor} {bodyClass} {bodyStyle}>
+  {datos && <script slot="head" type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...datos })} />}
+  <!-- ?captura oculta el aviso de demo, para las capturas de scripts/capturas.mjs -->
+  <script slot="head" is:inline>
+    if (new URLSearchParams(location.search).has('captura')) document.documentElement.classList.add('captura');
+  </script>
+
+  <div class="aviso-demo">
+    <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-4 px-4 py-2 md:px-8">
+      <p class="flex min-w-0 items-center gap-2.5">
+        <a href="/" aria-label={`Ir a ${site.nombre}`} class="shrink-0"><Logo claro soloIcono class="scale-[0.7]" /></a>
+        <span class="truncate">
+          <span class="hidden sm:inline">Ejemplo de página para {rubro.toLowerCase()}, armado por {site.nombre}. </span>
+          <span class="sm:hidden">Ejemplo de {site.nombre}. </span>
+          <span class="text-white/60">Negocio ficticio.</span>
+        </span>
+      </p>
+      <div class="flex shrink-0 items-center gap-4">
+        <a href="/#ejemplos" class="hidden text-white/75 hover:text-white md:inline">Ver otros ejemplos</a>
+        <a href={waLink(site.whatsapp, msg)} class="cta-demo">Quiero una así</a>
+      </div>
+    </div>
+  </div>
+
+  <slot />
+</Base>
+
+<style is:global>
+  .captura .aviso-demo,
+  .captura astro-dev-toolbar {
+    display: none !important;
+  }
+</style>
+
+<style>
+  .aviso-demo {
+    position: relative;
+    z-index: 60;
+    background: #0b1018;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+  .cta-demo {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: var(--color-azul);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .cta-demo:hover {
+    background: var(--color-azul-oscuro);
+  }
+</style>

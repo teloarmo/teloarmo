@@ -1,7 +1,13 @@
 ---
 // Íconos de línea simples (24x24, trazo 2). Uso: <Icono nombre="chat" />
+export type NombreIcono =
+  | 'chat' | 'buscar' | 'lista' | 'llave' | 'check' | 'reloj' | 'mas' | 'menos' | 'pin' | 'calendario' | 'correo'
+  | 'flecha' | 'estrella' | 'bolsa' | 'camion' | 'escudo' | 'rayo' | 'herramienta' | 'tijeras' | 'auto'
+  | 'personas' | 'cama' | 'fuego' | 'wifi' | 'hoja' | 'cerrar' | 'celular' | 'grafico' | 'codigo' | 'globo'
+  | 'candado' | 'montana' | 'instagram' | 'chispa' | 'ojo';
+
 interface Props {
-  nombre: 'chat' | 'buscar' | 'lista' | 'llave' | 'check' | 'reloj' | 'mas' | 'pin' | 'calendario' | 'correo';
+  nombre: NombreIcono;
   class?: string;
 }
 const { nombre, class: clase = 'size-6' } = Astro.props;
@@ -66,6 +72,114 @@ const { nombre, class: clase = 'size-6' } = Astro.props;
       <>
         <rect x="3" y="5" width="18" height="14" rx="2" />
         <path d="m4 7 8 6 8-6" />
+      </>
+    )
+  }
+  {nombre === 'menos' && <path d="M5 12h14" />}
+  {nombre === 'flecha' && <path d="M5 12h14M13 6l6 6-6 6" />}
+  {nombre === 'estrella' && <path d="m12 3 2.8 5.8 6.2.8-4.5 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3L3 9.6l6.2-.8L12 3Z" />}
+  {nombre === 'bolsa' && <path d="M5.5 8h13l-1 12.5h-11L5.5 8ZM9 8V6.5a3 3 0 0 1 6 0V8" />}
+  {
+    nombre === 'camion' && (
+      <>
+        <path d="M2.5 6h11.5v10H2.5zM14 10h4l3.5 3.5V16H14" />
+        <circle cx="7" cy="17.5" r="1.8" />
+        <circle cx="17.5" cy="17.5" r="1.8" />
+      </>
+    )
+  }
+  {nombre === 'escudo' && <path d="M12 3 20 6v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3ZM9 12l2 2 4-4" />}
+  {nombre === 'rayo' && <path d="M13 3 5 14h6l-1 7 8-11h-6l1-7Z" />}
+  {
+    nombre === 'herramienta' && (
+      <path d="M14.7 6.3a4 4 0 0 0-5.3 5.3L3.5 17.5 6.5 20.5l5.9-5.9a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6Z" />
+    )
+  }
+  {
+    nombre === 'tijeras' && (
+      <>
+        <circle cx="6" cy="6" r="3" />
+        <circle cx="6" cy="18" r="3" />
+        <path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12" />
+      </>
+    )
+  }
+  {
+    nombre === 'auto' && (
+      <>
+        <path d="M4 16v-3.5L6.2 7h11.6l2.2 5.5V16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1ZM4 12.5h16" />
+        <circle cx="7.5" cy="14.8" r=".6" />
+        <circle cx="16.5" cy="14.8" r=".6" />
+        <path d="M6 17v2M18 17v2" />
+      </>
+    )
+  }
+  {
+    nombre === 'personas' && (
+      <>
+        <circle cx="9" cy="8" r="3.5" />
+        <path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20a6.5 6.5 0 0 0-4-6" />
+      </>
+    )
+  }
+  {
+    nombre === 'cama' && (
+      <>
+        <path d="M3 19V6M3 14h18v5M21 14v-1a3 3 0 0 0-3-3h-7v4" />
+        <circle cx="7" cy="11" r="1.8" />
+      </>
+    )
+  }
+  {
+    nombre === 'fuego' && (
+      <path d="M12 21c-3.9 0-7-2.6-7-6.4 0-3.6 2.9-5.4 3.4-9.1 2.1 1.3 3.1 3.1 3.1 5.1 1-.7 1.8-2 2-3.6 2.6 2 4.5 4.7 4.5 7.6 0 3.8-2.6 6.4-6 6.4Z" />
+    )
+  }
+  {nombre === 'wifi' && <path d="M2 8.8a15 15 0 0 1 20 0M5 12.4a10 10 0 0 1 14 0M8.5 15.9a5 5 0 0 1 7 0M12 19.5h.01" />}
+  {nombre === 'hoja' && <path d="M5 20c0-9 5-15 15-15 0 10-6 15-15 15ZM5 20l8-8" />}
+  {nombre === 'cerrar' && <path d="M6 6l12 12M18 6 6 18" />}
+  {
+    nombre === 'celular' && (
+      <>
+        <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" />
+        <path d="M11 18.5h2" />
+      </>
+    )
+  }
+  {nombre === 'grafico' && <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />}
+  {nombre === 'codigo' && <path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14" />}
+  {
+    nombre === 'globo' && (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+      </>
+    )
+  }
+  {
+    nombre === 'candado' && (
+      <>
+        <rect x="5" y="11" width="14" height="10" rx="2" />
+        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+      </>
+    )
+  }
+  {nombre === 'montana' && <path d="M2.5 19.5 9.5 7.5l4.2 7 2.3-3.5 5.5 8.5H2.5Z" />}
+  {
+    nombre === 'instagram' && (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <path d="M17.5 6.5h.01" />
+      </>
+    )
+  }
+  {nombre === 'chispa' && <path d="M12 3c.6 4.6 3.4 7.4 8 8-4.6.6-7.4 3.4-8 8-.6-4.6-3.4-7.4-8-8 4.6-.6 7.4-3.4 8-8Z" />}
+  {
+    nombre === 'ojo' && (
+      <>
+        <path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" />
+        <circle cx="12" cy="12" r="3" />
       </>
     )
   }

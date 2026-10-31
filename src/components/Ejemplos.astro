@@ -1,51 +1,62 @@
 ---
-// Cada tarjeta se ve como la fachada de su negocio: letrero, toldo y una foto del local.
-import { ejemplos } from '../data/negocios';
-import { fotoUrl, fotoSrcset } from '../lib/formato';
+// Tarjetas de las páginas de ejemplo: una captura real dentro de una ventana de navegador.
+// Al pasar el mouse, la captura se desplaza como si alguien recorriera la página.
+import { Image } from 'astro:assets';
+import Icono from './Icono.astro';
+import { demos } from '../data/demos';
 ---
 
-<section id="ejemplos" class="py-20 lg:py-24">
+<section id="ejemplos" class="py-24 lg:py-32">
   <div class="wrap">
-    <h2 class="titulo max-w-[20ch]">Páginas de ejemplo</h2>
-    <p class="mt-4 max-w-[52ch] text-gris">
-      Son negocios ficticios para que veas cómo funciona: portada, catálogo y pedido por WhatsApp. La tuya la hacemos
-      con tu nombre, tus fotos y tus colores.
-    </p>
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <p class="antetitulo">Ejemplos por rubro</p>
+        <h2 class="titulo mt-4 max-w-[18ch]">Cada negocio vende distinto. Cada página también.</h2>
+      </div>
+      <p class="max-w-[42ch] text-gris">
+        Nada de plantillas repetidas: diseñamos según cómo vende tu rubro. Son negocios ficticios, pero todo funciona.
+        Pruébalos.
+      </p>
+    </div>
 
-    <ul class="mt-12 grid gap-6 md:grid-cols-3">
+    <ul class="bento mt-14 grid gap-5 md:grid-cols-6">
       {
-        ejemplos.map((n) => (
-          <li>
-            <a
-              href={`/demos/${n.slug}/`}
-              class="group flex h-full flex-col overflow-hidden rounded-2xl border border-linea"
-              style={`background:${n.colores.fondo};color:${n.colores.texto}`}
-            >
-              <div class="px-6 pt-6 pb-4" style={`background:${n.colores.marca};color:#fff`}>
-                <p class="font-negocio text-[1.65rem] leading-none font-black" style={`font-stretch:${n.ancho}%`}>
-                  {n.nombre}
-                </p>
+        demos.map((d, i) => (
+          <li class:list={['revelar', i < 2 ? 'md:col-span-3' : 'md:col-span-2']} style={`--retraso:${i * 70}ms`}>
+            <a href={`/demos/${d.slug}/`} class="tarjeta-ejemplo group flex h-full flex-col">
+              <div class="navegador">
+                <div class="flex items-center gap-3 px-3.5 py-2.5">
+                  <span class="flex gap-1.5" aria-hidden="true">
+                    <i class="size-2.5 rounded-full bg-[#ff5f57]" />
+                    <i class="size-2.5 rounded-full bg-[#febc2e]" />
+                    <i class="size-2.5 rounded-full bg-[#28c840]" />
+                  </span>
+                  <span class="flex min-w-0 flex-1 items-center gap-1.5 truncate rounded-md bg-suave px-2.5 py-1 text-xs text-gris">
+                    <Icono nombre="candado" class="size-3 shrink-0" />
+                    {d.dominio}
+                  </span>
+                </div>
+                <div class:list={['pantalla overflow-hidden', i < 2 ? 'aspect-[16/10]' : 'aspect-[4/3.4]']}>
+                  <Image
+                    src={d.captura}
+                    alt={`Página de ejemplo de ${d.nombre}`}
+                    widths={[480, 720, 1080]}
+                    sizes={i < 2 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 33vw, 100vw'}
+                    loading="lazy"
+                    class="captura block h-full w-full object-cover object-top"
+                  />
+                </div>
               </div>
-              <div class="relative">
-                <img
-                  src={fotoUrl(n.fotos.portada.src, 600, 375)}
-                  srcset={fotoSrcset(n.fotos.portada.src, [400, 600, 900], 1.6)}
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  alt=""
-                  width="600"
-                  height="375"
-                  loading="lazy"
-                  decoding="async"
-                  class="block aspect-[1.6] w-full object-cover"
-                  style="background: color-mix(in srgb, currentColor 8%, #fff)"
-                />
-                <div class="toldo absolute inset-x-0 top-0" style={`--t1:${n.colores.marca};--t2:#fff`} />
-              </div>
-              <div class="flex flex-1 flex-col px-6 pt-4 pb-6">
-                <p class="text-base opacity-80">{n.tipo}</p>
-                <p class="mt-2 text-lg leading-snug font-bold">{n.bajada}</p>
-                <p class="mt-auto pt-5 font-bold underline decoration-2 underline-offset-4 group-hover:decoration-4">
+              <div class="flex flex-1 flex-col px-1 pt-5">
+                <div class="flex flex-wrap items-center gap-2 text-sm">
+                  <span class="font-semibold text-tinta">{d.rubro}</span>
+                  <span class="rounded-full bg-azul-claro px-2.5 py-0.5 font-semibold text-azul-oscuro">{d.herramienta}</span>
+                </div>
+                <h3 class="font-display mt-2 text-2xl font-bold tracking-[-0.02em]">{d.nombre}</h3>
+                <p class="mt-1.5 text-gris">{d.frase}</p>
+                <p class="mt-auto flex items-center gap-1.5 pt-4 font-bold text-azul">
                   Ver ejemplo
+                  <Icono nombre="flecha" class="size-4 transition-transform group-hover:translate-x-1" />
                 </p>
               </div>
             </a>
@@ -55,3 +66,35 @@ import { fotoUrl, fotoSrcset } from '../lib/formato';
     </ul>
   </div>
 </section>
+
+<style>
+  .navegador {
+    overflow: hidden;
+    border: 1px solid var(--color-linea);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(22 32 46 / 0.04), 0 20px 40px -28px rgb(22 32 46 / 0.35);
+    transition:
+      box-shadow 0.3s,
+      transform 0.3s;
+  }
+  .tarjeta-ejemplo:hover .navegador {
+    transform: translateY(-4px);
+    box-shadow: 0 1px 2px rgb(22 32 46 / 0.04), 0 30px 60px -30px rgb(22 32 46 / 0.5);
+  }
+  .pantalla {
+    border-top: 1px solid var(--color-linea);
+  }
+  .captura {
+    transition: object-position 3.5s cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  .tarjeta-ejemplo:hover .captura {
+    object-position: 50% 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .captura,
+    .navegador {
+      transition: none;
+    }
+  }
+</style>

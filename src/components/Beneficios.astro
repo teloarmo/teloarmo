@@ -1,47 +1,385 @@
 ---
-import Icono from './Icono.astro';
+// Qué logra la página para el negocio: que lo encuentren, que le compren, que lo elijan
+// y que sepa qué funciona. Cada tarjeta lleva una ilustración hecha con HTML y SVG.
+import Icono, { type NombreIcono } from './Icono.astro';
+import { fotoUrl } from '../lib/formato';
 
-const beneficios = [
-  {
-    icono: 'buscar',
-    titulo: 'Te encuentran en Google',
-    texto: 'Cuando alguien busca un almacén o una ferretería cerca, aparece tu página con tu dirección, tus horarios y tus productos.',
-  },
-  {
-    icono: 'chat',
-    titulo: 'Menos preguntas repetidas',
-    texto: '¿A qué hora cierran? ¿Tienen despacho? La página responde por ti y tu WhatsApp queda para los pedidos.',
-  },
-  {
-    icono: 'lista',
-    titulo: 'Pedidos más ordenados',
-    texto: 'Tus clientes eligen del catálogo y el pedido te llega escrito por WhatsApp, listo para preparar.',
-  },
-  {
-    icono: 'llave',
-    titulo: 'Es tuya de verdad',
-    texto: 'El dominio, la página y las cuentas quedan a tu nombre. No nos pagas mensualidad.',
-  },
-] as const;
+const fotoRefugio = fotoUrl('https://images.unsplash.com/photo-1510798831971-661eb04b3739', 720, 360);
+
+const chats = [
+  { inicial: 'P', color: '#2f6fa3', nombre: 'Pedido desde la web', texto: '2 x Cemento 25 kg, 1 x Taladro… Total $76.970', hora: '23:41', nuevos: 1 },
+  { inicial: 'C', color: '#c2410c', nombre: 'Camila R.', texto: '¿Les queda pintura látex blanca? La necesito hoy', hora: '23:12', nuevos: 2 },
+  { inicial: 'J', color: '#15803d', nombre: 'Javier · maestro', texto: 'Necesito 10 sacos para mañana temprano', hora: '22:48', nuevos: 3 },
+  { inicial: 'P', color: '#2f6fa3', nombre: 'Pedido desde la web', texto: '4 x Ampolleta LED, 1 x Zapatilla… $26.950', hora: '21:30', nuevos: 1 },
+];
+// Visitas diarias de la ilustración de estadísticas (últimos 14 días).
+const visitas = [28, 34, 31, 42, 38, 51, 47, 44, 56, 61, 53, 68, 72, 80];
+const masVistos = [
+  { nombre: 'Taladro percutor', vistas: 312 },
+  { nombre: 'Cemento 25 kg', vistas: 248 },
+  { nombre: 'Ampolleta LED', vistas: 190 },
+];
+
+const extras: { icono: NombreIcono; titulo: string; texto: string }[] = [
+  { icono: 'reloj', titulo: 'Vende las 24 horas', texto: 'Tu página atiende, muestra y recibe pedidos aunque el local esté cerrado.' },
+  { icono: 'celular', titulo: 'Celular y computador', texto: 'Se ve perfecta en cualquier pantalla, donde tus clientes buscan y compran.' },
+  { icono: 'lista', titulo: 'La actualizas tú', texto: 'Precios, productos y horarios desde tu celular, sin depender de nadie.' },
+  { icono: 'llave', titulo: 'Es 100% tuya', texto: 'Dominio y cuentas a tu nombre desde el primer día. Sin mensualidades.' },
+];
 ---
 
-<section class="bg-suave py-20 lg:py-24">
+<section id="crecer" class="bg-suave py-24 lg:py-32">
   <div class="wrap">
-    <h2 class="titulo max-w-[22ch]">Lo que cambia cuando tu negocio tiene página</h2>
-    <ul class="mt-12 grid gap-x-16 gap-y-10 md:grid-cols-2">
-      {
-        beneficios.map((b) => (
-          <li class="flex gap-5">
-            <span class="flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-azul">
-              <Icono nombre={b.icono} />
-            </span>
-            <div>
-              <h3 class="text-xl font-bold">{b.titulo}</h3>
-              <p class="mt-1.5 max-w-[38ch] text-gris">{b.texto}</p>
+    <div class="revelar max-w-3xl">
+      <p class="antetitulo">Qué logramos</p>
+      <h2 class="titulo mt-4">Una página que trabaja para que tu negocio venda más.</h2>
+      <p class="mt-5 max-w-[56ch] text-[1.2rem] text-gris">
+        No hacemos páginas para que se vean bonitas y nada más. Las diseñamos para traerte clientes nuevos, que te
+        compren con menos esfuerzo y que sepas qué está funcionando.
+      </p>
+    </div>
+
+    <div class="mt-14 grid gap-5 md:grid-cols-2">
+      <!-- 1. Visibilidad: mapa estilo Google Maps -->
+      <article class="tarjeta revelar">
+        <div class="ilustracion mapa">
+          <svg class="absolute inset-0 h-full w-full" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect width="600" height="340" fill="#eef1f3"></rect>
+            <path d="M430 0h170v120c-40 10-80 40-120 30S420 90 430 0Z" fill="#aadaff"></path>
+            <rect x="40" y="200" width="130" height="90" rx="10" fill="#c8e6c9"></rect>
+            <rect x="380" y="230" width="110" height="80" rx="10" fill="#c8e6c9"></rect>
+            <g fill="#e2e6ea">
+              <rect x="40" y="40" width="110" height="60" rx="4"></rect><rect x="190" y="40" width="90" height="60" rx="4"></rect>
+              <rect x="190" y="200" width="150" height="90" rx="4"></rect><rect x="300" y="40" width="100" height="60" rx="4"></rect>
+              <rect x="40" y="120" width="110" height="55" rx="4"></rect><rect x="510" y="160" width="90" height="70" rx="4"></rect>
+            </g>
+            <g stroke="#fff" fill="none" stroke-linecap="round">
+              <path d="M0 110h600M0 190h600M0 310h600" stroke-width="12"></path>
+              <path d="M170 0v340M290 0v340M500 0v340" stroke-width="12"></path>
+            </g>
+            <path d="M-20 290C120 250 220 170 360 150s210-40 260-90" stroke="#fde293" stroke-width="16" fill="none"></path>            <!-- Otros negocios de la zona -->
+            <g fill="#9aa4ae">
+              <circle cx="110" cy="80" r="7"></circle><circle cx="470" cy="210" r="7"></circle><circle cx="560" cy="300" r="7"></circle>
+              <circle cx="80" cy="160" r="7"></circle><circle cx="400" cy="70" r="7"></circle>
+            </g>
+          </svg>
+          <!-- Tu negocio, destacado -->
+          <div class="marcador absolute top-[44%] left-[52%]">
+            <span class="pulso"></span>
+            <svg viewBox="0 0 30 40" class="relative h-12 w-9 drop-shadow-md" aria-hidden="true">
+              <path d="M15 40C9 31 0 24 0 15a15 15 0 1 1 30 0c0 9-9 16-15 25Z" fill="#ea4335"></path>
+              <circle cx="15" cy="15" r="5.5" fill="#a50e0e"></circle>
+            </svg>
+            <span class="etiqueta-mapa">Ferretería El Perno</span>
+          </div>
+
+          <div class="relative z-10 flex h-full w-full flex-col justify-between">
+            <div class="flex max-w-[20rem] items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm shadow-[0_4px_14px_-6px_rgb(0_0_0/0.35)]">
+              <Icono nombre="buscar" class="size-4 text-gris" />
+              <span class="flex-1">ferretería cerca de mí</span>
+              <Icono nombre="pin" class="size-4 text-azul" />
             </div>
+            <div class="ml-auto w-full max-w-[17.5rem] rounded-xl bg-white p-3.5 text-sm shadow-[0_14px_30px_-12px_rgb(0_0_0/0.4)]">
+              <p class="font-bold text-tinta">Ferretería El Perno</p>
+              <p class="flex items-center gap-1 text-gris">
+                4,8 <span class="flex text-[#f5b400]">{[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-3 fill-current" />)}</span> (212) · 450 m
+              </p>
+              <p class="text-gris"><span class="font-semibold text-[#188038]">Abierto</span> · Cierra a las 19:30</p>
+              <div class="mt-2.5 flex gap-1.5 text-xs font-semibold text-azul">
+                <span class="rounded-full bg-azul px-2.5 py-1 text-white">Sitio web</span>
+                <span class="rounded-full border border-linea px-2.5 py-1">Cómo llegar</span>
+                <span class="rounded-full border border-linea px-2.5 py-1">Llamar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-7 sm:p-8">
+          <p class="flex items-center gap-2 text-sm font-semibold text-azul"><Icono nombre="ojo" class="size-4" /> Visibilidad</p>
+          <h3 class="font-display mt-2 text-[1.75rem] font-bold tracking-[-0.02em]">Que te encuentren</h3>
+          <p class="mt-2 text-gris">
+            Preparamos tu página para aparecer en la búsqueda de Google y dejamos tu ficha de Google Maps al día. Cuando
+            alguien busca lo que vendes cerca, te encuentra a ti.
+          </p>
+        </div>
+      </article>
+
+      <!-- 2. Ventas: varios clientes escribiendo a la vez -->
+      <article class="tarjeta revelar" style="--retraso: 120ms">
+        <div class="ilustracion whatsapp">
+          <div class="relative w-full max-w-[24rem]">
+            <span class="contador absolute -top-3 -right-2 z-10 rounded-full bg-[#25d366] px-3 py-1 text-sm font-bold text-white shadow-lg">+7 hoy</span>
+            <div class="overflow-hidden rounded-2xl bg-white shadow-[0_20px_40px_-20px_rgb(0_0_0/0.45)]">
+              <div class="flex items-center justify-between bg-[#008069] px-4 py-3 text-white">
+                <p class="flex items-center gap-2 font-semibold"><Icono nombre="chat" class="size-4" /> WhatsApp Business</p>
+                <p class="text-sm text-white/80">4 chats nuevos</p>
+              </div>
+              <ul class="divide-y divide-[#eef0f1]">
+                {
+                  chats.map((c, i) => (
+                    <li class="chat flex items-center gap-3 px-4 py-2.5" style={`--retraso:${0.35 + i * 0.35}s`}>
+                      <span class="flex size-10 shrink-0 items-center justify-center rounded-full font-bold text-white" style={`background:${c.color}`}>
+                        {c.inicial}
+                      </span>
+                      <span class="min-w-0 flex-1 text-sm">
+                        <span class="flex justify-between gap-2">
+                          <span class="truncate font-semibold text-tinta">{c.nombre}</span>
+                          <span class="shrink-0 text-xs font-semibold text-[#25d366]">{c.hora}</span>
+                        </span>
+                        <span class="flex justify-between gap-2">
+                          <span class="truncate text-gris">{c.texto}</span>
+                          <span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#25d366] text-[0.7rem] font-bold text-white">{c.nuevos}</span>
+                        </span>
+                      </span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="p-7 sm:p-8">
+          <p class="flex items-center gap-2 text-sm font-semibold text-azul"><Icono nombre="bolsa" class="size-4" /> Ventas</p>
+          <h3 class="font-display mt-2 text-[1.75rem] font-bold tracking-[-0.02em]">Que te compren</h3>
+          <p class="mt-2 text-gris">
+            Pedidos, reservas y cotizaciones que te llegan ordenados por WhatsApp, a cualquier hora, incluso con el local
+            cerrado. Tú solo confirmas.
+          </p>
+        </div>
+      </article>
+
+      <!-- 3. Confianza: ficha profesional con foto -->
+      <article class="tarjeta revelar">
+        <div class="ilustracion">
+          <div class="ficha w-full max-w-[22rem] overflow-hidden rounded-2xl bg-white text-sm shadow-[0_20px_40px_-20px_rgb(22_32_46/0.5)]">
+            <div class="relative flex h-36 items-end bg-[#1f3a2c] bg-cover bg-center p-4" style={`background-image:linear-gradient(0deg,rgb(10 20 14/0.75),transparent 70%),url(${fotoRefugio})`}>
+              <span class="absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#1f3a2c]">Lago Caburgua · Pucón</span>
+              <p class="text-xl leading-none font-semibold text-white">Refugio Los Coihues</p>
+            </div>
+            <div class="p-4">
+              <p class="flex items-center gap-1 text-gris">
+                <span class="flex text-[#f5b400]">{[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-3.5 fill-current" />)}</span>
+                <strong class="text-tinta">4,9</strong> · 180 reseñas
+              </p>
+              <p class="mt-2 flex flex-wrap gap-1.5 text-xs text-gris">
+                <span class="rounded-full bg-suave px-2 py-0.5">Tinaja</span>
+                <span class="rounded-full bg-suave px-2 py-0.5">Wifi</span>
+                <span class="rounded-full bg-suave px-2 py-0.5">Junto al lago</span>
+              </p>
+              <div class="mt-3 flex items-center justify-between gap-2">
+                <p><span class="text-base font-bold text-tinta">$89.000</span> <span class="text-gris">/ noche</span></p>
+                <span class="rounded-full bg-[#1f3a2c] px-4 py-2 text-xs font-semibold text-white">Reservar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-7 sm:p-8">
+          <p class="flex items-center gap-2 text-sm font-semibold text-azul"><Icono nombre="escudo" class="size-4" /> Confianza</p>
+          <h3 class="font-display mt-2 text-[1.75rem] font-bold tracking-[-0.02em]">Que te elijan</h3>
+          <p class="mt-2 text-gris">
+            Una imagen profesional, con tus fotos, precios y horarios, da confianza. El cliente llega convencido de
+            comprarte a ti y no a la competencia.
+          </p>
+        </div>
+      </article>
+
+      <!-- 4. Resultados: estadísticas de Google Analytics -->
+      <article class="tarjeta revelar" style="--retraso: 120ms">
+        <div class="ilustracion">
+          <div class="w-full max-w-[24rem] rounded-2xl bg-white p-5 text-sm shadow-[0_20px_40px_-20px_rgb(22_32_46/0.5)]">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-gris">Visitas · últimos 14 días</p>
+                <p class="font-display text-3xl font-bold text-tinta">1.284</p>
+              </div>
+              <span class="rounded-full bg-[#e6f4ea] px-2.5 py-1 text-xs font-bold text-[#188038]">↑ 32%</span>
+            </div>
+            <svg viewBox="0 0 280 70" preserveAspectRatio="none" class="grafico mt-3 h-16 w-full" aria-hidden="true">
+              {
+                visitas.map((v, i) => (
+                  <rect x={i * 20 + 2} y={70 - v * 0.8} width="14" height={v * 0.8} rx="3" fill={i === visitas.length - 1 ? '#2f6fa3' : '#cfe0ee'} style={`--i:${i}`} />
+                ))
+              }
+            </svg>
+            <p class="mt-4 font-semibold text-tinta">Tus productos estrella</p>
+            <ul class="mt-2 space-y-2">
+              {
+                masVistos.map((p) => (
+                  <li>
+                    <span class="flex justify-between text-xs text-gris"><span>{p.nombre}</span><span>{p.vistas} vistas</span></span>
+                    <span class="mt-1 block h-1.5 overflow-hidden rounded-full bg-suave">
+                      <span class="barra block h-full rounded-full bg-azul" style={`--ancho:${(p.vistas / masVistos[0].vistas) * 100}%`} />
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="mt-4 flex gap-3 border-t border-linea pt-3 text-xs text-gris">
+              <span><strong class="text-tinta">58%</strong> Google</span>
+              <span><strong class="text-tinta">24%</strong> Instagram</span>
+              <span><strong class="text-tinta">18%</strong> WhatsApp</span>
+            </p>
+          </div>
+        </div>
+        <div class="p-7 sm:p-8">
+          <p class="flex items-center gap-2 text-sm font-semibold text-azul"><Icono nombre="grafico" class="size-4" /> Resultados</p>
+          <h3 class="font-display mt-2 text-[1.75rem] font-bold tracking-[-0.02em]">Que sepas qué funciona</h3>
+          <p class="mt-2 text-gris">
+            Conectamos Google Analytics: ves cuántas personas te visitan, desde dónde llegan y cuáles son tus productos o
+            servicios estrella, para decidir con datos.
+          </p>
+        </div>
+      </article>
+    </div>
+
+    <ul class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        extras.map((e, i) => (
+          <li class="extra revelar relative overflow-hidden rounded-2xl p-6" style={`--retraso:${i * 80}ms`}>
+            <Icono nombre={e.icono} class="fondo-icono absolute -right-4 -bottom-4 size-28 text-azul" />
+            <span class="relative flex size-12 items-center justify-center rounded-xl bg-azul text-white shadow-[0_10px_20px_-10px_var(--color-azul)]">
+              <Icono nombre={e.icono} class="size-6" />
+            </span>
+            <h3 class="font-display relative mt-5 text-xl font-bold tracking-[-0.02em]">{e.titulo}</h3>
+            <p class="relative mt-1.5 text-base text-gris">{e.texto}</p>
           </li>
         ))
       }
     </ul>
   </div>
 </section>
+
+<style>
+  .tarjeta {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--color-linea);
+    border-radius: 1.75rem;
+    background: #fff;
+    transition:
+      box-shadow 0.3s,
+      transform 0.3s;
+  }
+  .tarjeta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -35px rgb(22 32 46 / 0.4);
+  }
+  .ilustracion {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-height: 21rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1.75rem;
+    border-bottom: 1px solid var(--color-linea);
+    background:
+      radial-gradient(circle at 1px 1px, rgb(22 32 46 / 0.09) 1px, transparent 0) 0 0 / 18px 18px,
+      linear-gradient(180deg, #f7f9fb, #e9f0f6);
+  }
+  .mapa {
+    align-items: stretch;
+    padding: 1.25rem;
+  }
+  .whatsapp {
+    background:
+      radial-gradient(circle at 1px 1px, rgb(17 27 33 / 0.07) 1px, transparent 0) 0 0 / 16px 16px,
+      #efeae2;
+  }
+  .marcador {
+    transform: translate(-50%, -100%);
+  }
+  .pulso {
+    position: absolute;
+    left: 50%;
+    bottom: -0.5rem;
+    width: 3rem;
+    height: 1.25rem;
+    margin-left: -1.5rem;
+    border-radius: 50%;
+    background: rgb(234 67 53 / 0.35);
+  }
+  .etiqueta-mapa {
+    position: absolute;
+    left: 100%;
+    top: 0.6rem;
+    margin-left: 0.25rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.4rem;
+    background: #fff;
+    color: #a50e0e;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.2);
+  }
+  .extra {
+    border: 1px solid var(--color-linea);
+    background: linear-gradient(160deg, #fff 55%, var(--color-azul-claro));
+    transition:
+      transform 0.3s,
+      box-shadow 0.3s,
+      border-color 0.3s;
+  }
+  .extra:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--color-azul) 40%, var(--color-linea));
+    box-shadow: 0 24px 40px -28px rgb(22 32 46 / 0.45);
+  }
+  .extra :global(.fondo-icono) {
+    opacity: 0.07;
+    stroke-width: 1.5;
+  }
+  .barra {
+    width: var(--ancho);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pulso {
+      animation: latir 2s ease-out infinite;
+    }
+    :global(.visible) .chat {
+      animation: llegar 0.5s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+      animation-delay: var(--retraso);
+    }
+    :global(.visible) .contador {
+      animation: llegar 0.5s cubic-bezier(0.3, 1.3, 0.5, 1) 1.9s both;
+    }
+    :global(.visible) .grafico rect {
+      transform-box: fill-box;
+      transform-origin: bottom;
+      animation: crecer 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      animation-delay: calc(0.3s + var(--i) * 0.05s);
+    }
+    :global(.visible) .barra {
+      animation: llenar 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.6s both;
+    }
+  }
+  @keyframes latir {
+    from {
+      transform: scale(0.4);
+      opacity: 1;
+    }
+    to {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+  @keyframes llegar {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.97);
+    }
+  }
+  @keyframes crecer {
+    from {
+      transform: scaleY(0);
+    }
+  }
+  @keyframes llenar {
+    from {
+      width: 0;
+    }
+  }
+</style>

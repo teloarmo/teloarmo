@@ -1,0 +1,715 @@
+---
+// Ejemplo: barbería con reservas. El cliente elige servicio, barbero, día y hora,
+// y la reserva llega escrita por WhatsApp.
+import '@fontsource-variable/inter/wght.css';
+import Demo from '../../layouts/Demo.astro';
+import Icono from '../../components/Icono.astro';
+import Foto from '../../components/negocio/Foto.astro';
+import MiniMapa from '../../components/negocio/MiniMapa.astro';
+import { introDemo } from '../../data/demos';
+import { site } from '../../data/site';
+import { precio } from '../../lib/formato';
+
+const nombre = 'Filo Barbería';
+const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
+const F = {
+  portada: foto('1585747860715-2ba37e788b70', 'Interior de la barbería con sillones de cuero y muro de ladrillo'),
+  sillon: foto('1512690459411-b9245aed614b', 'Sillón de barbero de cuero café'),
+  matias: foto('1605497788044-5a32c7078486', 'Barbero secando el pelo de un cliente sonriente'),
+  joaquin: foto('1622287162716-f311baa1a2b8', 'Barbero tatuado cortando el pelo con máquina'),
+  diego: foto('1567894340315-735d7c361db0', 'Barbero perfilando un corte con máquina'),
+  g1: foto('1622286342621-4bd786c2447c', 'Corte degradado visto desde atrás'),
+  g2: foto('1599351431202-1e0f0137899a', 'Diseño de líneas hecho a máquina en la nuca'),
+  g3: foto('1517832606299-7ae9b720a186', 'Perfilado de barba con tijera, en blanco y negro'),
+  g4: foto('1593702275687-f8b402bf1fb5', 'Barbero terminando un corte clásico'),
+  g5: foto('1503951914875-452162b0f3f1', 'Afeitado con navaja en penumbra'),
+  g6: foto('1621605815971-fbc98d665033', 'Máquinas, tijeras y peinetas sobre la mesa de trabajo'),
+};
+
+const servicios = [
+  { id: 'clasico', nombre: 'Corte clásico', texto: 'Tijera y máquina, lavado y peinado.', min: 40, precio: 12000 },
+  { id: 'fade', nombre: 'Fade / degradado', texto: 'Degradado a máquina con terminación a navaja.', min: 45, precio: 14000 },
+  { id: 'corte-barba', nombre: 'Corte + barba', texto: 'El servicio completo, con toalla caliente.', min: 60, precio: 20000, popular: true },
+  { id: 'barba', nombre: 'Perfilado de barba', texto: 'Diseño, rebaje y aceite hidratante.', min: 25, precio: 9000 },
+  { id: 'afeitado', nombre: 'Afeitado clásico', texto: 'Navaja, toalla caliente y bálsamo.', min: 35, precio: 13000 },
+  { id: 'nino', nombre: 'Corte niño', texto: 'Hasta 12 años, con paciencia incluida.', min: 30, precio: 10000 },
+];
+const barberos = [
+  { id: 'matias', nombre: 'Matías', rol: 'Fundador · cortes clásicos', anos: 12, foto: F.matias },
+  { id: 'joaquin', nombre: 'Joaquín', rol: 'Fades y diseños', anos: 7, foto: F.joaquin },
+  { id: 'diego', nombre: 'Diego', rol: 'Barba y afeitado', anos: 5, foto: F.diego },
+];
+const horarios = [
+  { dias: 'Lunes a viernes', horas: '10:00 a 20:00' },
+  { dias: 'Sábado', horas: '10:00 a 18:00' },
+  { dias: 'Domingo', horas: 'Cerrado' },
+];
+const resenas = [
+  { autor: 'Felipe R.', texto: 'Reservé desde el celular a las 11 de la noche y al otro día me atendieron a la hora exacta. El mejor fade que me han hecho.' },
+  { autor: 'Tomás A.', texto: 'Ambiente buenísimo, te ofrecen café y no hay que esperar. Diego es un artista con la barba.' },
+  { autor: 'Ignacio V.', texto: 'Llevo a mi hijo y a mí nos atienden juntos. Puntuales, prolijos y a buen precio.' },
+];
+
+const config = {
+  numero: site.whatsapp,
+  intro: introDemo(nombre, 'reserva'),
+  servicios: servicios.map(({ id, nombre, min, precio }) => ({ id, nombre, min, precio })),
+  barberos: barberos.map(({ id, nombre }) => ({ id, nombre })),
+};
+
+const datos = {
+  '@type': 'BarberShop',
+  name: nombre,
+  address: { '@type': 'PostalAddress', streetAddress: 'Dirección de ejemplo 1234', addressLocality: 'Providencia', addressCountry: 'CL' },
+  openingHours: ['Mo-Fr 10:00-20:00', 'Sa 10:00-18:00'],
+  priceRange: '$$',
+};
+---
+
+<Demo
+  nombre={nombre}
+  rubro="Barbería"
+  descripcion="Barbería en Providencia. Cortes clásicos, fades, barba y afeitado con navaja. Reserva tu hora online."
+  themeColor="#0e0d0c"
+  bodyClass="barberia"
+  datos={datos}
+>
+  <header class="cabecera">
+    <div class="cont flex items-center justify-between gap-6 py-4">
+      <a href="#" class="marca leading-none">
+        <span class="block text-[2rem] tracking-[0.06em]">Filo</span>
+        <span class="mt-1 block text-[0.62rem] tracking-[0.42em] text-[var(--b-tenue)]">Barbería · Est. 2016</span>
+      </a>
+      <nav aria-label="Secciones" class="hidden md:block">
+        <ul class="flex gap-8 text-sm tracking-[0.12em] uppercase">
+          <li><a href="#servicios" class="enlace">Servicios</a></li>
+          <li><a href="#equipo" class="enlace">Equipo</a></li>
+          <li><a href="#trabajos" class="enlace">Trabajos</a></li>
+          <li><a href="#ubicacion" class="enlace">Ubicación</a></li>
+        </ul>
+      </nav>
+      <a href="#reservar" class="boton boton-sm">Reservar hora</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Portada -->
+    <section class="portada relative isolate overflow-hidden">
+      <Foto foto={F.portada} proporcion={16 / 9} prioridad sizes="100vw" anchos={[800, 1600, 2400]} class="absolute inset-0 -z-10 h-full!" />
+      <div class="cont flex min-h-[min(88svh,52rem)] flex-col justify-end pt-32 pb-14 md:pb-20">
+        <p class="rotulo">Barbería en Providencia</p>
+        <h1 class="marca mt-5 max-w-[11ch] text-[clamp(3.6rem,11vw,9.5rem)] leading-[0.86]">
+          Corte clásico. <span class="text-[var(--b-oro)]">Oficio</span> moderno.
+        </h1>
+        <p class="mt-6 max-w-[40ch] text-lg text-[var(--b-tenue)] md:text-xl">
+          Fades, barba y afeitado con navaja, sin esperas. Elige tu barbero y tu hora en menos de un minuto.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a href="#reservar" class="boton">
+            <Icono nombre="calendario" class="size-5" />
+            Reservar mi hora
+          </a>
+          <a href="#servicios" class="boton boton-linea">Ver servicios y precios</a>
+        </div>
+        <dl class="mt-14 grid max-w-3xl grid-cols-1 gap-6 border-t border-white/15 pt-6 text-sm sm:grid-cols-3">
+          <div>
+            <dt class="flex items-center gap-1.5 text-[var(--b-oro)]">
+              {[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-4 fill-current" />)}
+            </dt>
+            <dd class="mt-1.5 text-[var(--b-tenue)]"><strong class="text-white">4,9</strong> · 320 reseñas en Google</dd>
+          </div>
+          <div>
+            <dt class="font-semibold text-white">Sin esperas</dt>
+            <dd class="mt-1 text-[var(--b-tenue)]">Llegas a tu hora y te atendemos.</dd>
+          </div>
+          <div>
+            <dt class="font-semibold text-white">Abierto hoy</dt>
+            <dd class="mt-1 text-[var(--b-tenue)]">Lunes a sábado desde las 10:00.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" class="cont py-24 md:py-32">
+      <div class="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <div>
+          <p class="rotulo">Servicios</p>
+          <h2 class="marca titular mt-4">La carta de la casa</h2>
+          <p class="mt-5 max-w-[38ch] text-[var(--b-tenue)]">
+            Todos los servicios incluyen lavado, toalla caliente y un café o cerveza mientras esperas.
+          </p>
+          <div class="mt-10 hidden overflow-hidden rounded-sm lg:block">
+            <Foto foto={F.sillon} proporcion={4 / 5} sizes="30vw" anchos={[400, 700, 1000]} />
+          </div>
+        </div>
+        <ul class="divide-y divide-white/10 border-y border-white/10">
+          {
+            servicios.map((s) => (
+              <li class="servicio grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-1 py-7">
+                <h3 class="text-xl font-semibold">
+                  {s.nombre}
+                  {s.popular && <span class="ml-2 align-middle text-[0.65rem] tracking-[0.2em] text-[var(--b-oro)] uppercase">Más pedido</span>}
+                </h3>
+                <p class="marca text-2xl text-[var(--b-oro)]">{precio(s.precio)}</p>
+                <p class="text-[var(--b-tenue)]">
+                  {s.texto} <span class="whitespace-nowrap">· {s.min} min</span>
+                </p>
+                <a href="#reservar" data-elegir={s.id} class="enlace justify-self-end text-sm tracking-[0.12em] uppercase">
+                  Reservar
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- Reserva -->
+    <section id="reservar" class="reserva py-24 md:py-28">
+      <div class="cont">
+        <div class="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p class="rotulo">Reserva online</p>
+            <h2 class="marca titular mt-4">Elige tu hora</h2>
+          </div>
+          <p class="max-w-[34ch] text-[var(--b-tenue)]">Te confirmamos por WhatsApp en minutos. Sin llamadas, sin esperar respuesta.</p>
+        </div>
+
+        <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_22rem] lg:gap-10">
+          <form id="reserva" data-config={JSON.stringify(config)} class="space-y-10" novalidate>
+            <fieldset>
+              <legend class="paso"><span>01</span> Servicio</legend>
+              <div class="mt-4 grid gap-2.5 sm:grid-cols-2">
+                {
+                  servicios.map((s) => (
+                    <label class="opcion flex items-center justify-between gap-4 px-4 py-3.5">
+                      <input type="radio" name="servicio" value={s.id} class="sr-only" />
+                      <span>
+                        <span class="block font-semibold">{s.nombre}</span>
+                        <span class="text-sm text-[var(--b-tenue)]">{s.min} min</span>
+                      </span>
+                      <span class="font-semibold text-[var(--b-oro)]">{precio(s.precio)}</span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend class="paso"><span>02</span> Barbero</legend>
+              <div class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                <label class="opcion flex flex-col items-center gap-2 px-3 py-4 text-center">
+                  <input type="radio" name="barbero" value="cualquiera" class="sr-only" checked />
+                  <span class="flex size-14 items-center justify-center rounded-full border border-white/20 text-[var(--b-oro)]">
+                    <Icono nombre="tijeras" class="size-6" />
+                  </span>
+                  <span class="text-sm font-semibold">El primero disponible</span>
+                </label>
+                {
+                  barberos.map((b) => (
+                    <label class="opcion flex flex-col items-center gap-2 px-3 py-4 text-center">
+                      <input type="radio" name="barbero" value={b.id} class="sr-only" />
+                      <span class="size-14 overflow-hidden rounded-full">
+                        <Foto foto={{ ...b.foto, alt: '' }} proporcion={1} sizes="56px" anchos={[112, 168]} class="h-full!" />
+                      </span>
+                      <span class="text-sm font-semibold">{b.nombre}</span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend class="paso"><span>03</span> Día</legend>
+              <div data-dias class="dias mt-4 flex gap-2.5 overflow-x-auto pb-2">
+                <p class="text-[var(--b-tenue)]">Activa JavaScript para ver los días disponibles.</p>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend class="paso"><span>04</span> Hora</legend>
+              <div data-horas class="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+                <p class="col-span-full text-[var(--b-tenue)]">Primero elige un día.</p>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend class="paso"><span>05</span> Tu nombre</legend>
+              <label for="nombre-cliente" class="sr-only">Tu nombre</label>
+              <input id="nombre-cliente" name="cliente" autocomplete="given-name" placeholder="¿A nombre de quién reservamos?" class="campo mt-4 w-full px-4 py-3.5" />
+            </fieldset>
+          </form>
+
+          <aside class="lg:sticky lg:top-24 lg:self-start">
+            <div class="resumen p-6">
+              <h3 class="marca text-2xl tracking-[0.04em]">Tu reserva</h3>
+              <dl class="mt-5 space-y-3 text-sm">
+                <div class="flex justify-between gap-4"><dt class="text-[var(--b-tenue)]">Servicio</dt><dd data-r="servicio" class="text-right font-semibold">—</dd></div>
+                <div class="flex justify-between gap-4"><dt class="text-[var(--b-tenue)]">Barbero</dt><dd data-r="barbero" class="text-right font-semibold">—</dd></div>
+                <div class="flex justify-between gap-4"><dt class="text-[var(--b-tenue)]">Día</dt><dd data-r="dia" class="text-right font-semibold">—</dd></div>
+                <div class="flex justify-between gap-4"><dt class="text-[var(--b-tenue)]">Hora</dt><dd data-r="hora" class="text-right font-semibold">—</dd></div>
+              </dl>
+              <p class="mt-5 flex items-baseline justify-between border-t border-white/10 pt-4">
+                <span class="text-[var(--b-tenue)]">Total</span>
+                <span data-r="total" class="marca text-3xl text-[var(--b-oro)]">$0</span>
+              </p>
+              <a data-enviar class="boton mt-6 w-full" aria-disabled="true" target="_blank" rel="noopener">
+                <Icono nombre="chat" class="size-5" />
+                Confirmar por WhatsApp
+              </a>
+              <p data-falta class="mt-3 text-center text-sm text-[var(--b-tenue)]">Elige servicio, día y hora.</p>
+            </div>
+            <p class="mt-4 flex gap-2 text-sm text-[var(--b-tenue)]">
+              <Icono nombre="reloj" class="mt-0.5 size-4 shrink-0" />
+              Si no puedes venir, avísanos con 2 horas de anticipación para darle la hora a otro cliente.
+            </p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Equipo -->
+    <section id="equipo" class="cont py-24 md:py-32">
+      <p class="rotulo">El equipo</p>
+      <h2 class="marca titular mt-4">Manos con oficio</h2>
+      <ul class="mt-12 grid gap-8 sm:grid-cols-3">
+        {
+          barberos.map((b) => (
+            <li class="group">
+              <div class="overflow-hidden rounded-sm">
+                <Foto foto={b.foto} proporcion={4 / 5} sizes="(min-width: 640px) 33vw, 100vw" anchos={[400, 700, 1000]} class="grayscale transition duration-500 group-hover:scale-[1.03] group-hover:grayscale-0" />
+              </div>
+              <div class="mt-4 flex items-baseline justify-between gap-4">
+                <h3 class="marca text-3xl tracking-[0.03em]">{b.nombre}</h3>
+                <span class="text-sm text-[var(--b-oro)]">{b.anos} años de oficio</span>
+              </div>
+              <p class="mt-1 text-[var(--b-tenue)]">{b.rol}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Trabajos -->
+    <section id="trabajos" class="border-t border-white/10 py-24 md:py-32">
+      <div class="cont">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="rotulo">Trabajos</p>
+            <h2 class="marca titular mt-4">Recién salidos del sillón</h2>
+          </div>
+          <a href="#" class="enlace flex items-center gap-2 text-sm tracking-[0.12em] uppercase">
+            <Icono nombre="instagram" class="size-5" /> @filobarberia
+          </a>
+        </div>
+        <div class="galeria mt-12 grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
+          <div class="md:col-span-2 md:row-span-2"><Foto foto={F.g1} proporcion={1} sizes="(min-width: 768px) 50vw, 50vw" anchos={[400, 800, 1200]} class="h-full!" /></div>
+          <Foto foto={F.g2} proporcion={1} sizes="25vw" anchos={[300, 500, 700]} />
+          <Foto foto={F.g3} proporcion={1} sizes="25vw" anchos={[300, 500, 700]} />
+          <Foto foto={F.g4} proporcion={1} sizes="25vw" anchos={[300, 500, 700]} />
+          <Foto foto={F.g5} proporcion={1} sizes="25vw" anchos={[300, 500, 700]} />
+        </div>
+      </div>
+    </section>
+
+    <!-- Reseñas -->
+    <section class="reserva py-24 md:py-28">
+      <div class="cont">
+        <p class="rotulo">Lo que dicen</p>
+        <ul class="mt-10 grid gap-10 md:grid-cols-3">
+          {
+            resenas.map((r) => (
+              <li>
+                <p class="flex gap-1 text-[var(--b-oro)]">
+                  {[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-4 fill-current" />)}
+                </p>
+                <blockquote class="mt-4 text-lg leading-relaxed">“{r.texto}”</blockquote>
+                <p class="mt-4 text-sm text-[var(--b-tenue)]">{r.autor} · reseña en Google</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- Ubicación -->
+    <section id="ubicacion" class="cont grid gap-12 py-24 md:py-32 lg:grid-cols-[1fr_1.3fr] lg:items-center">
+      <div>
+        <p class="rotulo">Visítanos</p>
+        <h2 class="marca titular mt-4">Providencia</h2>
+        <p class="mt-5 flex gap-2 text-lg">
+          <Icono nombre="pin" class="mt-1 size-5 shrink-0 text-[var(--b-oro)]" />
+          Dirección de ejemplo 1234, a dos cuadras del metro.
+        </p>
+        <dl class="mt-8 border-t border-white/10">
+          {
+            horarios.map((h) => (
+              <div class="flex justify-between gap-4 border-b border-white/10 py-3">
+                <dt class="text-[var(--b-tenue)]">{h.dias}</dt>
+                <dd class="font-semibold">{h.horas}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="mt-6 text-sm text-[var(--b-tenue)]">Efectivo, débito, crédito y transferencia. Estacionamiento en la calle.</p>
+      </div>
+      <div>
+        <MiniMapa color="#c9a46a" nombre={nombre} fondo="#1a1917" calles="#2b2926" parque="#202a1d" avenida="#3b3328" class="rounded-sm" />
+        <p class="mt-3 text-sm text-[var(--b-tenue)]">Mapa de referencia. En tu página va el mapa de Google con tu dirección.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10">
+    <div class="cont flex flex-col gap-8 py-14 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="marca text-[clamp(4rem,12vw,8rem)] leading-[0.8] tracking-[0.04em] text-white/90">Filo</p>
+        <p class="mt-4 text-[var(--b-tenue)]">Barbería · Providencia · Desde 2016</p>
+      </div>
+      <div class="flex flex-col gap-2 text-sm text-[var(--b-tenue)] md:items-end">
+        <a href="#reservar" class="boton boton-sm">Reservar hora</a>
+        <p class="mt-4">Página armada por <a href="/" class="text-white underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#reservar" class="boton barra-movil md:hidden">
+    <Icono nombre="calendario" class="size-5" />
+    Reservar hora
+  </a>
+</Demo>
+
+<style is:global>
+  .barberia {
+    --b-fondo: #0e0d0c;
+    --b-panel: #171614;
+    --b-texto: #efe9df;
+    --b-tenue: #a49d92;
+    --b-oro: #c9a46a;
+    background: var(--b-fondo);
+    color: var(--b-texto);
+    font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+  }
+  .barberia [id] {
+    scroll-margin-top: 5rem;
+  }
+  .barberia .cont {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .barberia .cont {
+      padding-inline: 2.5rem;
+    }
+  }
+  .barberia .marca {
+    font-family: var(--font-negocio);
+    font-stretch: 62%;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .barberia .titular {
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+  }
+  .barberia .rotulo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--b-oro);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+  .barberia .rotulo::before {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background: currentColor;
+  }
+  .barberia .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--b-fondo) 78%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  }
+  .barberia .enlace {
+    display: inline-flex;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    padding-bottom: 2px;
+    transition: background-size 0.3s;
+  }
+  .barberia .enlace:hover {
+    background-size: 100% 1px;
+  }
+  .barberia .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3.25rem;
+    padding: 0.8rem 1.6rem;
+    border-radius: 2px;
+    background: var(--b-oro);
+    color: #12100d;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      opacity 0.2s;
+  }
+  .barberia .boton:hover {
+    background: #e0bf88;
+  }
+  .barberia .boton-linea {
+    background: transparent;
+    color: var(--b-texto);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35);
+  }
+  .barberia .boton-linea:hover {
+    background: var(--b-texto);
+    color: var(--b-fondo);
+  }
+  .barberia .boton-sm {
+    min-height: 2.6rem;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.72rem;
+  }
+  .barberia .boton[aria-disabled='true'] {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .barberia .portada::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(90deg, rgb(14 13 12 / 0.92) 0%, rgb(14 13 12 / 0.55) 55%, rgb(14 13 12 / 0.2) 100%),
+      linear-gradient(0deg, var(--b-fondo) 0%, transparent 35%);
+  }
+  .barberia .reserva {
+    background: var(--b-panel);
+  }
+  .barberia .paso {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .barberia .paso span {
+    color: var(--b-oro);
+    font-family: var(--font-negocio);
+    font-stretch: 62%;
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+  .barberia .opcion {
+    cursor: pointer;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 2px;
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+  }
+  .barberia .opcion:hover {
+    border-color: rgb(255 255 255 / 0.3);
+  }
+  .barberia .opcion:has(input:checked) {
+    border-color: var(--b-oro);
+    background: color-mix(in srgb, var(--b-oro) 12%, transparent);
+  }
+  .barberia .opcion:has(input:focus-visible) {
+    outline: 2px solid var(--b-oro);
+    outline-offset: 2px;
+  }
+  .barberia .opcion:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.3;
+    text-decoration: line-through;
+  }
+  .barberia .dias .opcion {
+    flex: 0 0 4.6rem;
+  }
+  .barberia .campo {
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 2px;
+    background: transparent;
+  }
+  .barberia .campo:focus {
+    outline: 2px solid var(--b-oro);
+    outline-offset: 0;
+  }
+  .barberia .resumen {
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: var(--b-fondo);
+  }
+  .barberia .barra-movil {
+    position: fixed;
+    inset: auto 1rem 1rem;
+    z-index: 40;
+    box-shadow: 0 10px 30px -8px rgb(0 0 0 / 0.6);
+  }
+  @media (max-width: 767px) {
+    .barberia footer {
+      padding-bottom: 5rem;
+    }
+  }
+  @media (min-width: 768px) {
+    .barberia .barra-movil {
+      display: none;
+    }
+  }
+  .barberia .galeria img {
+    border-radius: 2px;
+  }
+</style>
+
+<script>
+  import { precio, waLink } from '../../lib/formato';
+
+  type Servicio = { id: string; nombre: string; min: number; precio: number };
+  const form = document.getElementById('reserva') as HTMLFormElement;
+  const cfg = JSON.parse(form.dataset.config!) as {
+    numero: string;
+    intro: string;
+    servicios: Servicio[];
+    barberos: { id: string; nombre: string }[];
+  };
+  const cajaDias = form.querySelector('[data-dias]')!;
+  const cajaHoras = form.querySelector('[data-horas]')!;
+  const enviar = document.querySelector('[data-enviar]') as HTMLAnchorElement;
+  const falta = document.querySelector('[data-falta]') as HTMLElement;
+  const r = (k: string) => document.querySelector(`[data-r="${k}"]`) as HTMLElement;
+
+  const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const fechaLarga = new Intl.DateTimeFormat('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+  const mesCorto = new Intl.DateTimeFormat('es-CL', { month: 'short' });
+  const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const desdeIso = (s: string) => {
+    const [a, m, d] = s.split('-').map(Number);
+    return new Date(a, m - 1, d);
+  };
+
+  const opcion = (name: string, value: string, html: string, deshabilitado = false) => {
+    const label = document.createElement('label');
+    label.className = 'opcion flex flex-col items-center justify-center px-2 py-2.5 text-center';
+    const input = document.createElement('input');
+    Object.assign(input, { type: 'radio', name, value, className: 'sr-only', disabled: deshabilitado });
+    label.append(input);
+    label.insertAdjacentHTML('beforeend', html);
+    return label;
+  };
+
+  // Próximos 8 días hábiles (el domingo está cerrado).
+  cajaDias.innerHTML = '';
+  const hoy = new Date();
+  for (let i = 0, puestos = 0; puestos < 8; i++) {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + i);
+    if (d.getDay() === 0) continue;
+    const titulo = i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : DIAS[d.getDay()];
+    cajaDias.append(
+      opcion('dia', iso(d), `<span class="text-xs text-[var(--b-tenue)]">${titulo}</span><span class="text-xl font-semibold">${d.getDate()}</span><span class="text-xs text-[var(--b-tenue)]">${mesCorto.format(d).replace('.', '')}</span>`),
+    );
+    puestos++;
+  }
+
+  // Horas de atención en bloques de 45 minutos; algunas ya están tomadas (simulado).
+  const bloques = (sabado: boolean) => {
+    const fin = sabado ? 17 * 60 + 15 : 19 * 60 + 15;
+    const lista: string[] = [];
+    for (let m = 10 * 60; m <= fin; m += 45) {
+      if (m >= 13 * 60 + 30 && m < 14 * 60 + 30) continue; // colación
+      lista.push(`${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`);
+    }
+    return lista;
+  };
+  const tomada = (clave: string) => {
+    let h = 0;
+    for (const c of clave) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    return h % 3 === 0;
+  };
+
+  const valor = (name: string) => (form.querySelector(`input[name="${name}"]:checked`) as HTMLInputElement | null)?.value;
+
+  const pintarHoras = () => {
+    const dia = valor('dia');
+    if (!dia) return;
+    const barbero = valor('barbero') ?? 'cualquiera';
+    const anterior = valor('hora');
+    const fecha = desdeIso(dia);
+    const ahora = new Date();
+    cajaHoras.innerHTML = '';
+    bloques(fecha.getDay() === 6).forEach((h) => {
+      const [hh, mm] = h.split(':').map(Number);
+      const pasada = iso(ahora) === dia && hh * 60 + mm <= ahora.getHours() * 60 + ahora.getMinutes() + 30;
+      const ocupada = barbero === 'cualquiera' ? tomada(dia + h + 'a') && tomada(dia + h + 'b') : tomada(dia + h + barbero);
+      const op = opcion('hora', h, `<span class="font-semibold">${h}</span>`, pasada || ocupada);
+      const input = op.querySelector('input')!;
+      if (h === anterior && !input.disabled) input.checked = true;
+      cajaHoras.append(op);
+    });
+  };
+
+  const actualizar = () => {
+    const s = cfg.servicios.find((x) => x.id === valor('servicio'));
+    const bId = valor('barbero') ?? 'cualquiera';
+    const barbero = cfg.barberos.find((b) => b.id === bId)?.nombre ?? 'El primero disponible';
+    const dia = valor('dia');
+    const hora = valor('hora');
+    const cliente = (form.elements.namedItem('cliente') as HTMLInputElement).value.trim();
+    const diaTexto = dia ? fechaLarga.format(desdeIso(dia)) : '';
+
+    r('servicio').textContent = s ? `${s.nombre} · ${s.min} min` : '—';
+    r('barbero').textContent = barbero;
+    r('dia').textContent = diaTexto ? diaTexto.charAt(0).toUpperCase() + diaTexto.slice(1) : '—';
+    r('hora').textContent = hora ?? '—';
+    r('total').textContent = precio(s?.precio ?? 0);
+
+    const listo = !!(s && dia && hora);
+    enviar.setAttribute('aria-disabled', String(!listo));
+    falta.hidden = listo;
+    if (listo) {
+      const texto = [
+        cfg.intro,
+        `- Servicio: ${s.nombre} (${precio(s.precio)}, ${s.min} min)`,
+        `- Barbero: ${barbero}`,
+        `- Día y hora: ${diaTexto}, ${hora}`,
+        cliente && `- A nombre de: ${cliente}`,
+      ].filter(Boolean);
+      enviar.href = waLink(cfg.numero, texto.join('\n'));
+    } else {
+      enviar.removeAttribute('href');
+    }
+  };
+
+  form.addEventListener('change', (e) => {
+    const name = (e.target as HTMLInputElement).name;
+    if (name === 'dia' || name === 'barbero') pintarHoras();
+    actualizar();
+  });
+  form.addEventListener('input', actualizar);
+
+  // "Reservar" en la carta de servicios deja el servicio elegido.
+  document.querySelectorAll<HTMLAnchorElement>('[data-elegir]').forEach((a) =>
+    a.addEventListener('click', () => {
+      const input = form.querySelector<HTMLInputElement>(`input[name="servicio"][value="${a.dataset.elegir}"]`);
+      if (input) input.checked = true;
+      actualizar();
+    }),
+  );
+
+  actualizar();
+</script>

@@ -1,0 +1,462 @@
+---
+// Ejemplo: ferretería con lista para cotizar. Buscador y filtros por categoría;
+// la lista se envía por WhatsApp con cantidades y total referencial.
+import '@fontsource-variable/inter/wght.css';
+import Demo from '../../layouts/Demo.astro';
+import Icono, { type NombreIcono } from '../../components/Icono.astro';
+import Foto from '../../components/negocio/Foto.astro';
+import MiniMapa from '../../components/negocio/MiniMapa.astro';
+import Carro from '../../components/demo/Carro.astro';
+import { introDemo } from '../../data/demos';
+import { site } from '../../data/site';
+import { precio, waLink } from '../../lib/formato';
+
+const nombre = 'Ferretería El Perno';
+const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
+const F = {
+  portada: foto('1759200165738-6366977a73c6', 'Muro con herramientas y artículos de ferretería en exhibición'),
+  nosotros: foto('1497219055242-93359eeed651', 'Manos trabajando madera con un formón'),
+  herramientas: foto('1599651971621-7c42aaa20cd2', 'Herramientas de mano sobre una mesa blanca'),
+  construccion: foto('1775049525334-6a797b803823', 'Bloques de concreto y tablas de madera apilados'),
+  gasfiteria: foto('1642797735471-3e90055c5ff9', 'Distintos tipos de cañerías y fittings sobre una mesa'),
+  electricidad: foto('1601462904263-f2fa0c851cb9', 'Cables eléctricos de colores'),
+  taladro: foto('1504148455328-c376907d081c', 'Taladro inalámbrico rojo'),
+  destornilladores: foto('1524224313114-ebd9c49dde82', 'Destornillador rojo con punta metálica'),
+  huincha: foto('1703756291638-b1774ae3c186', 'Huincha de medir sobre fondo blanco'),
+  cemento: foto('1773394089934-3e29f2a3d6a9', 'Sacos de cemento apilados'),
+  pintura: foto('1670940094923-6f75e4dc5c3a', 'Tarro de pintura azul con una brocha'),
+  llave: foto('1687184464107-3804b88644c9', 'Llave de bronce sobre una mesa de madera'),
+  ampolleta: foto('1674659719067-8735479ba10c', 'Ampolleta blanca sobre una mesa'),
+  extension: foto('1581558775369-0fe7925f0035', 'Zapatilla eléctrica blanca y negra'),
+};
+
+const categorias: { id: string; nombre: string; icono: NombreIcono }[] = [
+  { id: 'herramientas', nombre: 'Herramientas', icono: 'herramienta' },
+  { id: 'construccion', nombre: 'Construcción', icono: 'montana' },
+  { id: 'pintura', nombre: 'Pintura', icono: 'chispa' },
+  { id: 'gasfiteria', nombre: 'Gasfitería', icono: 'fuego' },
+  { id: 'electricidad', nombre: 'Electricidad', icono: 'rayo' },
+];
+const productos = [
+  { id: 'taladro', cat: 'herramientas', nombre: 'Taladro percutor inalámbrico', detalle: '20 V, 2 baterías', precio: 64990, foto: F.taladro, oferta: 79990 },
+  { id: 'set-mano', cat: 'herramientas', nombre: 'Set de herramientas de mano', detalle: '24 piezas con estuche', precio: 24990, foto: F.herramientas },
+  { id: 'destornilladores', cat: 'herramientas', nombre: 'Juego de destornilladores', detalle: '6 piezas, punta imantada', precio: 7990, foto: F.destornilladores },
+  { id: 'huincha', cat: 'herramientas', nombre: 'Huincha de medir', detalle: '5 m, con freno', precio: 4490, foto: F.huincha },
+  { id: 'cemento', cat: 'construccion', nombre: 'Cemento especial', detalle: 'Saco 25 kg', precio: 5990, foto: F.cemento, oferta: 6790 },
+  { id: 'bloque', cat: 'construccion', nombre: 'Bloque de hormigón', detalle: '14 x 19 x 39 cm', precio: 890, foto: F.construccion },
+  { id: 'pintura', cat: 'pintura', nombre: 'Látex lavable interior', detalle: 'Galón, 12 colores', precio: 14990, foto: F.pintura },
+  { id: 'llave-paso', cat: 'gasfiteria', nombre: 'Llave de paso bronce', detalle: '1/2 pulgada', precio: 6490, foto: F.llave },
+  { id: 'fittings', cat: 'gasfiteria', nombre: 'Kit de fittings PVC', detalle: '20 piezas surtidas', precio: 8990, foto: F.gasfiteria },
+  { id: 'cable', cat: 'electricidad', nombre: 'Cable eléctrico 2,5 mm', detalle: 'Rollo 10 m', precio: 9990, foto: F.electricidad },
+  { id: 'ampolleta', cat: 'electricidad', nombre: 'Ampolleta LED', detalle: '9 W, luz cálida, pack 4', precio: 4990, foto: F.ampolleta, oferta: 5960 },
+  { id: 'extension', cat: 'electricidad', nombre: 'Zapatilla eléctrica', detalle: '6 enchufes, con interruptor', precio: 6990, foto: F.extension },
+];
+const servicios: { icono: NombreIcono; titulo: string; texto: string }[] = [
+  { icono: 'camion', titulo: 'Despacho a obra', texto: 'En el día para pedidos antes de las 13:00. Gratis sobre $80.000 en la comuna.' },
+  { icono: 'herramienta', titulo: 'Corte a medida', texto: 'Cortamos madera, tableros y fierro a la medida que necesites.' },
+  { icono: 'chispa', titulo: 'Pintura preparada', texto: 'Igualamos el color que traigas en una muestra o una foto.' },
+  { icono: 'llave', titulo: 'Copia de llaves', texto: 'Llaves simples y de seguridad, listas en 5 minutos.' },
+];
+const horarios = [
+  { dias: 'Lunes a viernes', horas: '8:30 a 19:30' },
+  { dias: 'Sábado', horas: '9:00 a 15:00' },
+];
+
+const datos = {
+  '@type': 'HardwareStore',
+  name: nombre,
+  address: { '@type': 'PostalAddress', streetAddress: 'Dirección de ejemplo 789', addressLocality: 'La Florida', addressCountry: 'CL' },
+  openingHours: ['Mo-Fr 08:30-19:30', 'Sa 09:00-15:00'],
+};
+---
+
+<Demo
+  nombre={nombre}
+  rubro="Ferretería"
+  descripcion="Ferretería en La Florida: herramientas, construcción, pintura, gasfitería y electricidad. Arma tu lista y te la cotizamos en el día."
+  themeColor="#111111"
+  bodyClass="ferreteria"
+  datos={datos}
+>
+  <div class="bg-[var(--f-amarillo)] text-sm font-medium text-[var(--f-negro)]">
+    <p class="cont flex items-center justify-center gap-2 py-2 text-center">
+      <Icono nombre="camion" class="size-4 shrink-0" />
+      Despacho a obra en el día en pedidos antes de las 13:00 · Factura para empresas
+    </p>
+  </div>
+
+  <header class="cabecera">
+    <div class="cont flex flex-wrap items-center gap-x-6 gap-y-3 py-4">
+      <a href="#" class="flex items-center gap-2.5">
+        <span class="tuerca flex size-10 items-center justify-center bg-[var(--f-amarillo)] text-[var(--f-negro)]">
+          <span class="size-3.5 rounded-full border-[3px] border-[var(--f-negro)]"></span>
+        </span>
+        <span class="text-xl leading-none font-black tracking-[-0.04em]">El Perno<span class="block text-[0.62rem] font-semibold tracking-[0.25em] text-[var(--f-tenue)] uppercase">Ferretería</span></span>
+      </a>
+      <label class="buscador order-last flex w-full items-center gap-2 rounded-full px-4 md:order-none md:w-auto md:flex-1">
+        <Icono nombre="buscar" class="size-5 shrink-0 text-[var(--f-tenue)]" />
+        <span class="sr-only">Buscar productos</span>
+        <input id="buscar" type="search" placeholder="¿Qué necesitas? Ej: cemento, taladro, teflón" autocomplete="off" class="min-h-11 w-full bg-transparent outline-none" />
+      </label>
+      <div class="ml-auto flex items-center gap-2 md:ml-0">
+        <a href={waLink(site.whatsapp, `Hola, vi el ejemplo de ${nombre} en ${site.nombre} y me gustaría una página así para mi negocio.`)} class="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold hover:bg-[var(--f-suave)] lg:flex">
+          <Icono nombre="chat" class="size-5" /> Ayuda
+        </a>
+        <button type="button" data-carro-abrir class="relative flex items-center gap-2 rounded-full bg-[var(--f-negro)] py-2.5 pr-4 pl-3.5 text-sm font-semibold text-white">
+          <Icono nombre="lista" class="size-5" />
+          Mi lista
+          <span data-carro-cuenta hidden class="flex size-5 items-center justify-center rounded-full bg-[var(--f-amarillo)] text-xs font-bold text-[var(--f-negro)]">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Portada -->
+    <section class="cont grid gap-4 pt-6 lg:grid-cols-[1.6fr_1fr]">
+      <div class="relative isolate flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-3xl p-7 text-white sm:p-10 lg:min-h-[32rem]">
+        <Foto foto={F.portada} proporcion={16 / 10} prioridad sizes="(min-width: 1024px) 60vw, 100vw" anchos={[700, 1100, 1600]} class="absolute inset-0 -z-10 h-full!" />
+        <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/45 to-black/10"></div>
+        <p class="w-fit rounded-full bg-[var(--f-amarillo)] px-3 py-1 text-sm font-bold text-[var(--f-negro)]">+8.000 productos en tienda</p>
+        <h1 class="mt-4 max-w-[14ch] text-[clamp(2.4rem,5.4vw,4.4rem)] leading-[0.95] font-black tracking-[-0.045em]">Todo para tu obra, cotizado en el día.</h1>
+        <p class="mt-4 max-w-[44ch] text-lg text-white/85">Arma tu lista desde el celular y te respondemos con stock y total. Retiras en el local o te lo llevamos.</p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#productos" class="boton">Armar mi lista <Icono nombre="flecha" class="size-5" /></a>
+          <a href="#servicios" class="boton boton-vidrio">Ver servicios</a>
+        </div>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+        <div class="flex flex-col justify-between rounded-3xl bg-[var(--f-amarillo)] p-7">
+          <Icono nombre="herramienta" class="size-8" />
+          <div class="mt-8">
+            <h2 class="text-2xl leading-tight font-black tracking-[-0.03em]">¿Eres maestro o tienes una pyme?</h2>
+            <p class="mt-2">Precios por volumen, factura y cuenta corriente para clientes frecuentes.</p>
+            <a href="#productos" class="mt-4 inline-flex items-center gap-1.5 font-bold underline decoration-2 underline-offset-4">Pide tu cotización <Icono nombre="flecha" class="size-4" /></a>
+          </div>
+        </div>
+        <div class="flex flex-col justify-between rounded-3xl bg-[var(--f-negro)] p-7 text-white">
+          <Icono nombre="camion" class="size-8 text-[var(--f-amarillo)]" />
+          <div class="mt-8">
+            <h2 class="text-2xl leading-tight font-black tracking-[-0.03em]">Despacho a obra en el día</h2>
+            <p class="mt-2 text-white/75">Cemento, áridos y materiales pesados hasta tu obra. Gratis sobre $80.000.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categorías -->
+    <nav aria-label="Categorías" class="cont mt-10">
+      <ul class="grid grid-cols-3 gap-3 sm:grid-cols-5">
+        {
+          categorias.map((c) => (
+            <li>
+              <a href="#productos" data-filtro={c.id} class="categoria flex flex-col items-center gap-3 rounded-2xl px-2 py-5 text-center font-semibold">
+                <span class="flex size-12 items-center justify-center rounded-full bg-[var(--f-suave)]"><Icono nombre={c.icono} class="size-6" /></span>
+                <span class="text-sm sm:text-base">{c.nombre}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <!-- Productos -->
+    <section id="productos" class="cont py-16 lg:py-20">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 class="titular">Los más pedidos</h2>
+          <p class="mt-2 text-[var(--f-tenue)]">Precios con IVA. Te confirmamos stock y total al cotizar.</p>
+        </div>
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
+          <button type="button" class="filtro" data-filtro="todo" aria-pressed="true">Todo</button>
+          {categorias.map((c) => <button type="button" class="filtro" data-filtro={c.id} aria-pressed="false">{c.nombre}</button>)}
+        </div>
+      </div>
+
+      <p id="sin-resultados" class="mt-10 rounded-2xl bg-[var(--f-suave)] p-6 text-[var(--f-tenue)]" hidden>
+        No encontramos ese producto en la página, pero seguro lo tenemos en tienda. Agrégalo en el mensaje al enviar tu lista.
+      </p>
+      <ul class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+        {
+          productos.map((p) => (
+            <li class="producto group flex flex-col overflow-hidden rounded-2xl" data-cat={p.cat} data-buscar={`${p.nombre} ${p.detalle} ${p.cat}`}>
+              <div class="relative overflow-hidden bg-[var(--f-suave)]">
+                <Foto foto={p.foto} proporcion={1} sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw" anchos={[300, 500, 800]} class="transition duration-500 group-hover:scale-105" />
+                {p.oferta && <span class="absolute top-3 left-3 rounded-full bg-[#e11d48] px-2.5 py-1 text-xs font-bold text-white">Oferta</span>}
+              </div>
+              <div class="flex flex-1 flex-col p-4">
+                <p class="text-xs font-semibold tracking-[0.08em] text-[var(--f-tenue)] uppercase">{categorias.find((c) => c.id === p.cat)?.nombre}</p>
+                <h3 class="mt-1 leading-snug font-bold">{p.nombre}</h3>
+                <p class="text-sm text-[var(--f-tenue)]">{p.detalle}</p>
+                <p class="mt-auto flex items-baseline gap-2 pt-4">
+                  <span class="text-xl font-black tracking-[-0.02em]">{precio(p.precio)}</span>
+                  {p.oferta && <s class="text-sm text-[var(--f-tenue)]">{precio(p.oferta)}</s>}
+                </p>
+                <button type="button" class="agregar mt-3" data-carro-agregar data-id={p.id} data-nombre={p.nombre} data-detalle={p.detalle} data-precio={p.precio}>
+                  <Icono nombre="mas" class="size-4" /> Agregar<span class="hidden sm:inline"> a mi lista</span>
+                </button>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Cómo cotizar -->
+    <section class="bg-[var(--f-negro)] text-white">
+      <div class="cont grid gap-10 py-16 lg:grid-cols-[1fr_2fr] lg:items-center lg:py-20">
+        <h2 class="titular">Cotiza sin hacer fila</h2>
+        <ol class="grid gap-8 sm:grid-cols-3">
+          {
+            [
+              ['Arma tu lista', 'Agrega productos y cantidades desde la página.'],
+              ['Envíala por WhatsApp', 'Te llega escrita, con el detalle y el total referencial.'],
+              ['Retira o recibe', 'Te confirmamos stock y la tenemos lista para ti.'],
+            ].map(([t, d], i) => (
+              <li>
+                <span class="flex size-10 items-center justify-center rounded-full bg-[var(--f-amarillo)] font-black text-[var(--f-negro)]">{i + 1}</span>
+                <h3 class="mt-4 text-lg font-bold">{t}</h3>
+                <p class="mt-1 text-white/70">{d}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" class="cont py-16 lg:py-24">
+      <h2 class="titular">Más que una ferretería</h2>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          servicios.map((s) => (
+            <li class="rounded-2xl border border-[var(--f-linea)] p-6">
+              <span class="flex size-12 items-center justify-center rounded-xl bg-[var(--f-amarillo)]"><Icono nombre={s.icono} class="size-6" /></span>
+              <h3 class="mt-5 text-lg font-bold">{s.titulo}</h3>
+              <p class="mt-1.5 text-[var(--f-tenue)]">{s.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Nosotros y ubicación -->
+    <section class="cont grid gap-4 pb-16 lg:grid-cols-2 lg:pb-24">
+      <div class="flex flex-col overflow-hidden rounded-3xl bg-[var(--f-suave)]">
+        <Foto foto={F.nosotros} proporcion={16 / 9} sizes="(min-width: 1024px) 50vw, 100vw" anchos={[500, 800, 1200]} />
+        <div class="p-7 sm:p-9">
+          <h2 class="text-2xl font-black tracking-[-0.03em]">Atendidos por gente que sabe de obra</h2>
+          <p class="mt-3 text-[var(--f-tenue)]">
+            Desde 1998 en el barrio. Si no sabes cómo se llama lo que necesitas, mándanos una foto por WhatsApp y te ayudamos a encontrarlo.
+          </p>
+        </div>
+      </div>
+      <div id="ubicacion" class="flex flex-col rounded-3xl border border-[var(--f-linea)] p-7 sm:p-9">
+        <h2 class="text-2xl font-black tracking-[-0.03em]">Visítanos</h2>
+        <p class="mt-3 flex gap-2"><Icono nombre="pin" class="mt-0.5 size-5 shrink-0" /> Dirección de ejemplo 789, La Florida. Estacionamiento para clientes.</p>
+        <dl class="mt-5">
+          {
+            horarios.map((h) => (
+              <div class="flex justify-between gap-4 border-b border-[var(--f-linea)] py-2.5">
+                <dt class="text-[var(--f-tenue)]">{h.dias}</dt>
+                <dd class="font-semibold">{h.horas}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <div class="mt-6 flex-1">
+          <MiniMapa color="#111111" nombre={nombre} avenida="#ffd34d" class="rounded-2xl" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[var(--f-negro)] text-white/70">
+    <div class="cont flex flex-col gap-4 py-10 text-sm md:flex-row md:items-center md:justify-between">
+      <p><span class="font-black text-white">El Perno</span> · Ferretería en La Florida desde 1998</p>
+      <p>Página armada por <a href="/" class="text-white underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
+    </div>
+  </footer>
+
+  <Carro
+    titulo="Tu lista"
+    enviar="Cotizar por WhatsApp"
+    nota="Precios referenciales con IVA. Te respondemos con stock y total en el día."
+    vacio="Tu lista está vacía. Agrega los productos que necesitas y te los cotizamos."
+    intro={introDemo(nombre, 'lista')}
+    numero={site.whatsapp}
+    clave="lista-ferreteria"
+  />
+</Demo>
+
+<style is:global>
+  .ferreteria {
+    --f-negro: #111111;
+    --f-amarillo: #ffc21a;
+    --f-suave: #f4f4f2;
+    --f-linea: #e5e5e1;
+    --f-tenue: #62625d;
+    --c-fondo: #fff;
+    --c-texto: var(--f-negro);
+    --c-marca: var(--f-amarillo);
+    --c-sobre-marca: var(--f-negro);
+    --c-linea: var(--f-linea);
+    --c-radio: 999px;
+    background: #fff;
+    color: var(--f-negro);
+    font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+  }
+  .ferreteria [id] {
+    scroll-margin-top: 7rem;
+  }
+  .ferreteria .cont {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 768px) {
+    .ferreteria .cont {
+      padding-inline: 2rem;
+    }
+  }
+  .ferreteria .titular {
+    font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .ferreteria .tuerca {
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%);
+  }
+  .ferreteria .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgb(255 255 255 / 0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--f-linea);
+  }
+  .ferreteria .buscador {
+    background: var(--f-suave);
+    border: 1px solid transparent;
+  }
+  .ferreteria .buscador:focus-within {
+    background: #fff;
+    border-color: var(--f-negro);
+  }
+  .ferreteria .boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 3.1rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    background: var(--f-amarillo);
+    color: var(--f-negro);
+    font-weight: 700;
+    transition:
+      transform 0.2s,
+      background-color 0.2s;
+  }
+  .ferreteria .boton:hover {
+    transform: translateY(-1px);
+    background: #ffcf47;
+  }
+  .ferreteria .boton-vidrio {
+    background: rgb(255 255 255 / 0.14);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+  }
+  .ferreteria .boton-vidrio:hover {
+    background: rgb(255 255 255 / 0.25);
+  }
+  .ferreteria .categoria {
+    border: 1px solid var(--f-linea);
+    transition:
+      border-color 0.2s,
+      transform 0.2s;
+  }
+  .ferreteria .categoria:hover {
+    border-color: var(--f-negro);
+    transform: translateY(-2px);
+  }
+  .ferreteria .filtro {
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid var(--f-linea);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .ferreteria .filtro[aria-pressed='true'] {
+    background: var(--f-negro);
+    border-color: var(--f-negro);
+    color: #fff;
+  }
+  .ferreteria .producto {
+    border: 1px solid var(--f-linea);
+    transition: box-shadow 0.2s;
+  }
+  .ferreteria .producto:hover {
+    box-shadow: 0 16px 36px -22px rgb(0 0 0 / 0.35);
+  }
+  .ferreteria .agregar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.6rem;
+    border-radius: 999px;
+    background: var(--f-negro);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+  }
+  .ferreteria .agregar:hover {
+    background: #333;
+  }
+  .ferreteria .agregar:active {
+    background: var(--f-amarillo);
+    color: var(--f-negro);
+  }
+</style>
+
+<script>
+  // Buscador y filtros por categoría.
+  const quitarTildes = (s: string) =>
+    s
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase();
+  const buscar = document.getElementById('buscar') as HTMLInputElement;
+  const sinResultados = document.getElementById('sin-resultados')!;
+  const productos = [...document.querySelectorAll<HTMLElement>('.producto')];
+  const filtros = [...document.querySelectorAll<HTMLButtonElement>('.filtro')];
+  let categoria = 'todo';
+
+  const aplicar = () => {
+    const q = quitarTildes(buscar.value.trim());
+    let visibles = 0;
+    productos.forEach((p) => {
+      const ok = (categoria === 'todo' || p.dataset.cat === categoria) && (!q || quitarTildes(p.dataset.buscar ?? '').includes(q));
+      p.hidden = !ok;
+      if (ok) visibles++;
+    });
+    sinResultados.hidden = visibles > 0;
+    filtros.forEach((f) => f.setAttribute('aria-pressed', String(f.dataset.filtro === categoria)));
+  };
+
+  buscar.addEventListener('input', () => {
+    if (buscar.value && window.scrollY < 300) document.getElementById('productos')!.scrollIntoView({ behavior: 'smooth' });
+    aplicar();
+  });
+  document.querySelectorAll<HTMLElement>('[data-filtro]').forEach((el) =>
+    el.addEventListener('click', () => {
+      categoria = el.dataset.filtro!;
+      aplicar();
+    }),
+  );
+</script>

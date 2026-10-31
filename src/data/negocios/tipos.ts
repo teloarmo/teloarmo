@@ -57,5 +57,4 @@ export interface Negocio {
   categorias: Categoria[];
   preguntas: { p: string; r: string }[];
   ficticio: boolean; // true: los botones de WhatsApp llevan a TeLoArmo
-  listado: boolean; // true: aparece en la sección Ejemplos de la web
 }

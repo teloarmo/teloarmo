@@ -117,5 +117,4 @@ export const almacen: Negocio = {
     { p: '¿Puedo pedir algo que no está en el catálogo?', r: 'Sí, escríbenos por WhatsApp y te contamos si lo tenemos.' },
   ],
   ficticio: true,
-  listado: true,
 };
