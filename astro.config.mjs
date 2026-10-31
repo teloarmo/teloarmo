@@ -4,9 +4,13 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
+// SITIO y BASE se definen al publicar (ver .github/workflows/deploy.yml).
+// En GitHub Pages sin dominio propio el sitio vive en https://teloarmo.github.io/teloarmo/,
+// así que BASE es "/teloarmo". Con dominio propio (teloarmo.cl), BASE queda en "/".
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://teloarmo.cl', // TODO: confirmar dominio
+  site: process.env.SITIO ?? 'https://teloarmo.cl', // TODO: confirmar dominio
+  base: process.env.BASE ?? '/',
 
   vite: {
     plugins: [tailwindcss()]

@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { ruta } from '../lib/formato';
 ---
 
 <Base title="Página no encontrada" noindex>
@@ -10,8 +11,8 @@ import Footer from '../components/Footer.astro';
     <h1 class="display max-w-[16ch] text-[clamp(2.5rem,6vw,4.5rem)]">Esta página todavía no la armamos.</h1>
     <p class="mt-6 max-w-[44ch] text-[1.2rem]">Puede que el link esté mal escrito o que la página ya no exista.</p>
     <div class="mt-8 flex flex-wrap gap-3">
-      <a class="btn btn-azul" href="/">Ir al inicio</a>
-      <a class="btn btn-linea" href="/#ejemplos">Ver páginas de ejemplo</a>
+      <a class="btn btn-azul" href={ruta('/')}>Ir al inicio</a>
+      <a class="btn btn-linea" href={ruta('/#ejemplos')}>Ver páginas de ejemplo</a>
     </div>
   </main>
   <Footer enInicio={false} />

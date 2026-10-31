@@ -1,39 +1,45 @@
 ---
 import Icono from './Icono.astro';
 import { paquetes, incluidoSiempre, notaTerceros } from '../data/paquetes';
-import { precio } from '../lib/formato';
+import { site } from '../data/site';
+import { precio, waLink } from '../lib/formato';
 ---
 
-<section id="precios" class="bg-suave py-20 lg:py-24">
+<section id="precios" class="bg-suave py-24 lg:py-32">
   <div class="wrap">
-    <h2 class="titulo max-w-[20ch]">Precios</h2>
-    <p class="mt-4 max-w-[52ch] text-gris">
-      Elige según lo que necesita tu negocio. En la propuesta te damos el precio exacto antes de partir.
-    </p>
+    <div class="revelar text-center">
+      <p class="antetitulo">Precios</p>
+      <h2 class="titulo mx-auto mt-4 max-w-[20ch]">Elige cuánto quieres crecer.</h2>
+      <p class="mx-auto mt-5 max-w-[52ch] text-gris">
+        Un solo pago por tu página, sin mensualidades. En la propuesta te damos el precio exacto antes de partir.
+      </p>
+    </div>
 
-    <div class="mt-12 grid gap-12 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-linea">
+    <div class="mt-14 grid gap-5 lg:grid-cols-3 lg:items-stretch">
       {
-        paquetes.map((p) => (
-          <article class="flex flex-col lg:px-9 lg:first:pl-0 lg:last:pr-0">
-            <h3 class="font-display text-[2rem] leading-none font-bold tracking-[-0.03em]">
-              {p.nombre}
-            </h3>
-            <p class="mt-2 min-h-[3.1em] text-gris">{p.para}</p>
-            <p class="etiqueta mt-5 self-start">
-              <span class="text-base">desde</span>
-              <span class="font-display text-[1.75rem] leading-none font-bold tracking-[-0.02em]">
-                {precio(p.desde)}
-              </span>
+        paquetes.map((p, i) => (
+          <article class:list={['plan revelar flex flex-col rounded-3xl p-8', { destacado: p.destacado }]} style={`--retraso:${i * 100}ms`}>
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="font-display text-[1.75rem] leading-none font-bold tracking-[-0.03em]">{p.nombre}</h3>
+              {p.destacado && <span class="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold whitespace-nowrap">Recomendado</span>}
+            </div>
+            <p class="nota-plan mt-3 min-h-[3.1em]">{p.para}</p>
+            <p class="mt-6 flex items-baseline gap-2">
+              <span class="nota-plan text-base">desde</span>
+              <span class="font-display text-[2.6rem] leading-none font-bold tracking-[-0.03em]">{precio(p.desde)}</span>
             </p>
-            <ul class="mt-6 space-y-2.5">
+            <a class:list={['btn mt-7 w-full', p.destacado ? 'btn-blanco' : 'btn-azul']} href={waLink(site.whatsapp, `Hola, me interesa el paquete ${p.nombre} para mi negocio.`)}>
+              Me interesa {p.nombre}
+            </a>
+            <ul class="mt-8 space-y-3">
               {p.incluye.map((item) => (
                 <li class="flex gap-3">
-                  <Icono nombre="check" class="mt-1 size-5 shrink-0 text-azul" />
+                  <Icono nombre="check" class="check mt-1 size-5 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
-            <p class="mt-6 flex items-center gap-2 pt-1 text-gris lg:mt-auto lg:pt-6">
+            <p class="nota-plan mt-auto flex items-center gap-2 pt-8 text-base">
               <Icono nombre="reloj" class="size-5" />
               {p.plazo}
             </p>
@@ -42,9 +48,41 @@ import { precio } from '../lib/formato';
       }
     </div>
 
-    <div class="mt-14 max-w-[62ch] border-t border-linea pt-8">
+    <div class="revelar mx-auto mt-12 max-w-[64ch] text-center">
       <p class="font-bold">{incluidoSiempre}</p>
-      <p class="mt-3 text-gris">{notaTerceros}</p>
+      <p class="mt-3 text-base text-gris">{notaTerceros}</p>
     </div>
   </div>
 </section>
+
+<style>
+  .plan {
+    border: 1px solid var(--color-linea);
+    background: #fff;
+  }
+  .plan .nota-plan {
+    color: var(--color-gris);
+  }
+  .plan .check {
+    color: var(--color-azul);
+  }
+  .plan.destacado {
+    border-color: transparent;
+    background:
+      radial-gradient(30rem 20rem at 100% 0%, rgb(79 147 201 / 0.45), transparent 60%),
+      var(--color-tinta);
+    color: #fff;
+    box-shadow: 0 40px 80px -40px rgb(22 32 46 / 0.7);
+  }
+  .plan.destacado .nota-plan {
+    color: rgb(255 255 255 / 0.7);
+  }
+  .plan.destacado .check {
+    color: #8fbde3;
+  }
+  @media (min-width: 1024px) {
+    .plan.destacado {
+      margin-block: -0.75rem 0.75rem;
+    }
+  }
+</style>

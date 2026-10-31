@@ -1,0 +1,532 @@
+---
+// Ejemplo: cabañas con reserva por fechas. Calcula noches y total según la cabaña
+// y los huéspedes, y envía la solicitud de reserva por WhatsApp.
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/fraunces/wght.css';
+import Demo from '../../layouts/Demo.astro';
+import Icono, { type NombreIcono } from '../../components/Icono.astro';
+import Foto from '../../components/negocio/Foto.astro';
+import MiniMapa from '../../components/negocio/MiniMapa.astro';
+import Preguntas from '../../components/Preguntas.astro';
+import { introDemo } from '../../data/demos';
+import { site } from '../../data/site';
+import { precio, ruta } from '../../lib/formato';
+
+const nombre = 'Refugio Los Coihues';
+const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
+const F = {
+  portada: foto('1510798831971-661eb04b3739', 'Cabaña de madera iluminada junto a un lago, rodeada de bosque nevado'),
+  arrayan: foto('1449158743715-0a90ebb6d2d8', 'Cabaña pequeña de madera en medio del bosque'),
+  coihue: foto('1587061949409-02df41d5e562', 'Cabaña de troncos rodeada de árboles altos'),
+  rauli: foto('1475087542963-13ab5e611954', 'Casa de madera en una pradera verde con cerros detrás'),
+  lago: foto('1501785888041-af3ef285b470', 'Lago de aguas turquesa con un bote, rodeado de montañas'),
+  sendero: foto('1586375300773-8384e3e4916f', 'Sendero de tierra entre árboles con una baranda de madera'),
+  atardecer: foto('1542718610-a1d656d1884c', 'Cabaña con techo a dos aguas al atardecer'),
+  hamaca: foto('1499696010180-025ef6e1a8f9', 'Hamaca entre árboles frente a una cabaña'),
+  volcan: foto('1464822759023-fed622ff2c3b', 'Valle verde con montañas nevadas al fondo'),
+  interior: foto('1522708323590-d24dbb6b0267', 'Living luminoso con sillón rojo y cocina abierta'),
+};
+
+const cabanas = [
+  { id: 'arrayan', nombre: 'Cabaña Arrayán', personas: 2, dormitorios: 1, noche: 65000, foto: F.arrayan, texto: 'Para parejas. Cama king, chimenea y terraza con vista al bosque.' },
+  { id: 'coihue', nombre: 'Cabaña Coihue', personas: 4, dormitorios: 2, noche: 89000, foto: F.coihue, texto: 'Para familias. Dos dormitorios, cocina equipada y tinaja privada.' },
+  { id: 'rauli', nombre: 'Casa Raulí', personas: 6, dormitorios: 3, noche: 125000, foto: F.rauli, texto: 'Para grupos. Tres dormitorios, quincho y acceso directo al lago.' },
+];
+const servicios: { icono: NombreIcono; texto: string }[] = [
+  { icono: 'fuego', texto: 'Tinaja con agua caliente' },
+  { icono: 'wifi', texto: 'Wifi para trabajar' },
+  { icono: 'hoja', texto: '4 hectáreas de bosque nativo' },
+  { icono: 'montana', texto: 'A 50 m del lago' },
+];
+const experiencias = [
+  { titulo: 'Kayak en el lago', texto: 'Kayaks y chalecos sin costo para huéspedes.', foto: F.lago },
+  { titulo: 'Senderos nativos', texto: 'Tres rutas señalizadas dentro del refugio.', foto: F.sendero },
+  { titulo: 'Tinaja al atardecer', texto: 'Agua a 38 °C, la encendemos cuando nos avises.', foto: F.atardecer },
+  { titulo: 'Volcán y termas', texto: 'Excursiones guiadas a 40 minutos.', foto: F.volcan },
+  { titulo: 'Hamaca y lectura', texto: 'Biblioteca y rincones para no hacer nada.', foto: F.hamaca },
+];
+const preguntas = [
+  { p: '¿A qué hora es el check-in y el check-out?', r: 'Check-in desde las 15:00 y check-out hasta las 12:00. Si necesitas otro horario, avísanos y lo coordinamos.' },
+  { p: '¿Cuál es la estadía mínima?', r: 'Dos noches. En enero, febrero y fines de semana largos, tres noches.' },
+  { p: '¿Se aceptan mascotas?', r: 'Sí, en la Cabaña Arrayán y la Casa Raulí, con un cargo de limpieza de $10.000 por estadía.' },
+  { p: '¿Incluye ropa de cama y toallas?', r: 'Sí. También leña para la chimenea, kit de aseo y café de grano para la primera mañana.' },
+];
+
+const config = {
+  numero: site.whatsapp,
+  intro: introDemo(nombre, 'reserva'),
+  cabanas: cabanas.map(({ id, nombre, personas, noche }) => ({ id, nombre, personas, noche })),
+};
+const datos = {
+  '@type': 'LodgingBusiness',
+  name: nombre,
+  address: { '@type': 'PostalAddress', addressLocality: 'Pucón', addressRegion: 'La Araucanía', addressCountry: 'CL' },
+  checkinTime: '15:00',
+  checkoutTime: '12:00',
+  petsAllowed: true,
+};
+---
+
+<Demo
+  nombre={nombre}
+  rubro="Cabañas"
+  descripcion="Cabañas en el bosque junto al lago Caburgua, Pucón. Tinaja, kayaks y senderos nativos. Reserva directo y sin comisiones."
+  themeColor="#1f3a2c"
+  bodyClass="cabanas"
+  datos={datos}
+>
+  <header class="cabecera">
+    <div class="cont flex items-center justify-between gap-6 py-4">
+      <a href="#" class="flex items-center gap-2.5">
+        <Icono nombre="hoja" class="size-7" />
+        <span class="serif text-[1.45rem] leading-none">Los Coihues</span>
+      </a>
+      <nav aria-label="Secciones" class="hidden md:block">
+        <ul class="flex gap-8 text-[0.95rem]">
+          <li><a href="#cabanas" class="opacity-85 hover:opacity-100">Cabañas</a></li>
+          <li><a href="#experiencias" class="opacity-85 hover:opacity-100">Experiencias</a></li>
+          <li><a href="#preguntas" class="opacity-85 hover:opacity-100">Preguntas</a></li>
+          <li><a href="#llegar" class="opacity-85 hover:opacity-100">Cómo llegar</a></li>
+        </ul>
+      </nav>
+      <a href="#reservar" class="boton boton-sm">Reservar</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Portada -->
+    <section class="portada relative isolate -mt-[4.6rem] flex min-h-[min(100svh,58rem)] items-end overflow-hidden text-[var(--c-arena)]">
+      <Foto foto={F.portada} proporcion={16 / 10} prioridad sizes="100vw" anchos={[900, 1600, 2400]} class="absolute inset-0 -z-10 h-full!" />
+      <div class="cont pt-40 pb-40 md:pb-48">
+        <p class="flex items-center gap-2 text-sm tracking-[0.18em] uppercase opacity-90">
+          <Icono nombre="pin" class="size-4" /> Lago Caburgua · Pucón
+        </p>
+        <h1 class="serif mt-5 max-w-[12ch] text-[clamp(3.4rem,8.5vw,7.5rem)] leading-[0.92] tracking-[-0.03em]">
+          Despierta frente al lago.
+        </h1>
+        <p class="mt-6 max-w-[42ch] text-lg leading-relaxed opacity-90 md:text-xl">
+          Tres cabañas de madera en cuatro hectáreas de bosque nativo. Tinaja, kayaks y silencio.
+        </p>
+      </div>
+    </section>
+
+    <!-- Reserva -->
+    <section id="reservar" class="cont relative z-10 -mt-28 md:-mt-32">
+      <form id="reserva" data-config={JSON.stringify(config)} class="reserva rounded-3xl p-5 sm:p-7" novalidate>
+        <div class="grid gap-3 md:grid-cols-[1fr_1fr_0.8fr_1.3fr]">
+          <label class="campo">
+            <span>Llegada</span>
+            <input type="date" name="llegada" required />
+          </label>
+          <label class="campo">
+            <span>Salida</span>
+            <input type="date" name="salida" required />
+          </label>
+          <label class="campo">
+            <span>Huéspedes</span>
+            <select name="huespedes">
+              {[1, 2, 3, 4, 5, 6].map((n) => <option value={n} selected={n === 2}>{n} {n === 1 ? 'persona' : 'personas'}</option>)}
+            </select>
+          </label>
+          <label class="campo">
+            <span>Cabaña</span>
+            <select name="cabana">
+              {cabanas.map((c) => <option value={c.id}>{c.nombre} · hasta {c.personas}</option>)}
+            </select>
+          </label>
+        </div>
+        <div class="mt-5 flex flex-col gap-4 border-t border-[var(--c-linea)] pt-5 md:flex-row md:items-center md:justify-between">
+          <p data-resumen class="text-[var(--c-tenue)]">Elige tus fechas para ver el total de tu estadía.</p>
+          <a data-enviar class="boton shrink-0" aria-disabled="true" target="_blank" rel="noopener">
+            <Icono nombre="chat" class="size-5" />
+            Consultar disponibilidad
+          </a>
+        </div>
+      </form>
+      <p class="mt-4 flex items-center justify-center gap-2 text-center text-sm text-[var(--c-tenue)]">
+        <Icono nombre="escudo" class="size-4" />
+        Reserva directa: mejor precio que en las plataformas y sin comisiones.
+      </p>
+    </section>
+
+    <!-- Intro -->
+    <section class="cont grid gap-12 py-24 lg:grid-cols-2 lg:items-center lg:gap-20 lg:py-32">
+      <div>
+        <p class="rotulo">El refugio</p>
+        <h2 class="serif titular mt-4">Un lugar para bajar las revoluciones</h2>
+        <p class="mt-6 max-w-[48ch] text-lg leading-relaxed text-[var(--c-tenue)]">
+          Construimos cada cabaña con madera nativa y mucho cuidado. Desde tu terraza solo se escuchan los pájaros y el
+          agua. A 25 minutos de Pucón, lo bastante cerca para todo y lo bastante lejos para desconectarte.
+        </p>
+        <ul class="mt-10 grid grid-cols-2 gap-5">
+          {
+            servicios.map((s) => (
+              <li class="flex items-center gap-3">
+                <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-[var(--c-musgo)]/12 text-[var(--c-bosque)]">
+                  <Icono nombre={s.icono} class="size-5" />
+                </span>
+                <span class="leading-snug">{s.texto}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="grid grid-cols-[1.3fr_1fr] gap-4">
+        <div class="overflow-hidden rounded-[1.75rem]"><Foto foto={F.interior} proporcion={3 / 4} sizes="30vw" anchos={[400, 700, 1000]} class="h-full!" /></div>
+        <div class="mt-16 overflow-hidden rounded-[1.75rem]"><Foto foto={F.hamaca} proporcion={3 / 4.4} sizes="22vw" anchos={[300, 500, 800]} class="h-full!" /></div>
+      </div>
+    </section>
+
+    <!-- Cabañas -->
+    <section id="cabanas" class="bg-[var(--c-papel)] py-24 lg:py-32">
+      <div class="cont">
+        <div class="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p class="rotulo">Alojamiento</p>
+            <h2 class="serif titular mt-4">Elige tu cabaña</h2>
+          </div>
+          <p class="max-w-[38ch] text-[var(--c-tenue)]">Todas con cocina equipada, calefacción a leña, estacionamiento y ropa de cama.</p>
+        </div>
+        <ul class="mt-12 grid gap-6 md:grid-cols-3">
+          {
+            cabanas.map((c) => (
+              <li class="tarjeta group flex flex-col overflow-hidden rounded-[1.75rem]">
+                <div class="overflow-hidden">
+                  <Foto foto={c.foto} proporcion={4 / 3} sizes="(min-width: 768px) 33vw, 100vw" anchos={[400, 700, 1000]} class="transition duration-700 group-hover:scale-105" />
+                </div>
+                <div class="flex flex-1 flex-col p-6">
+                  <h3 class="serif text-[1.75rem] leading-tight">{c.nombre}</h3>
+                  <p class="mt-2 text-[var(--c-tenue)]">{c.texto}</p>
+                  <p class="mt-4 flex gap-5 text-sm">
+                    <span class="flex items-center gap-1.5"><Icono nombre="personas" class="size-4" /> Hasta {c.personas}</span>
+                    <span class="flex items-center gap-1.5"><Icono nombre="cama" class="size-4" /> {c.dormitorios} {c.dormitorios === 1 ? 'dormitorio' : 'dormitorios'}</span>
+                  </p>
+                  <div class="mt-auto flex items-end justify-between gap-4 border-t border-[var(--c-linea)] pt-5">
+                    <p>
+                      <span class="serif text-2xl">{precio(c.noche)}</span>
+                      <span class="text-sm text-[var(--c-tenue)]"> / noche</span>
+                    </p>
+                    <a href="#reservar" data-elegir={c.id} class="flex items-center gap-1 font-semibold text-[var(--c-bosque)]">
+                      Reservar <Icono nombre="flecha" class="size-4" />
+                    </a>
+                  </div>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- Experiencias -->
+    <section id="experiencias" class="py-24 lg:py-32">
+      <div class="cont">
+        <p class="rotulo">Qué hacer</p>
+        <h2 class="serif titular mt-4">Días que se pasan volando</h2>
+      </div>
+      <ul class="carrusel cont mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4">
+        {
+          experiencias.map((e) => (
+            <li class="relative w-[78%] shrink-0 snap-start overflow-hidden rounded-[1.75rem] text-white sm:w-[45%] lg:w-[30%]">
+              <Foto foto={e.foto} proporcion={4 / 5} sizes="(min-width: 1024px) 30vw, 80vw" anchos={[400, 700, 1000]} />
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-6 pt-20">
+                <h3 class="serif text-2xl">{e.titulo}</h3>
+                <p class="mt-1 text-white/85">{e.texto}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Reseña -->
+    <section class="bg-[var(--c-bosque)] py-24 text-[var(--c-arena)] lg:py-32">
+      <figure class="cont max-w-4xl text-center">
+        <p class="flex justify-center gap-1 text-[var(--c-ambar)]">{[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-5 fill-current" />)}</p>
+        <blockquote class="serif mt-8 text-[clamp(1.7rem,3.4vw,2.7rem)] leading-[1.2]">
+          “Fuimos por dos noches y nos quedamos cuatro. La tinaja con vista al lago, el silencio del bosque y la atención de
+          Ana y Pedro. Ya reservamos para el próximo verano.”
+        </blockquote>
+        <figcaption class="mt-8 opacity-80">Fernanda y Diego · 4,9 de 5 en 180 reseñas</figcaption>
+      </figure>
+    </section>
+
+    <!-- Preguntas -->
+    <section id="preguntas" class="cont grid gap-10 py-24 lg:grid-cols-[1fr_2fr] lg:py-32" style="--borde: var(--c-linea)">
+      <h2 class="serif titular">Antes de venir</h2>
+      <Preguntas items={preguntas} />
+    </section>
+
+    <!-- Cómo llegar -->
+    <section id="llegar" class="cont grid gap-12 pb-24 lg:grid-cols-[1fr_1.3fr] lg:items-center lg:pb-32">
+      <div>
+        <p class="rotulo">Cómo llegar</p>
+        <h2 class="serif titular mt-4">A 25 minutos de Pucón</h2>
+        <ol class="mt-8 space-y-4 text-[var(--c-tenue)]">
+          <li class="flex gap-3"><Icono nombre="auto" class="mt-0.5 size-5 shrink-0 text-[var(--c-bosque)]" /> Desde Pucón, toma el camino a Caburgua. Todo pavimentado.</li>
+          <li class="flex gap-3"><Icono nombre="pin" class="mt-0.5 size-5 shrink-0 text-[var(--c-bosque)]" /> En el km 18 verás nuestro letrero de madera a la derecha.</li>
+          <li class="flex gap-3"><Icono nombre="globo" class="mt-0.5 size-5 shrink-0 text-[var(--c-bosque)]" /> Aeropuerto de Temuco a 1 h 50 min. Te ayudamos con el traslado.</li>
+        </ol>
+      </div>
+      <div>
+        <MiniMapa color="#1f3a2c" nombre={nombre} fondo="#e6e2d3" parque="#9fbf8f" avenida="#e8c9a0" class="rounded-[1.75rem]" />
+        <p class="mt-3 text-sm text-[var(--c-tenue)]">Mapa de referencia. En tu página va el mapa de Google con tu dirección.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[var(--c-bosque)] text-[var(--c-arena)]">
+    <div class="cont flex flex-col gap-6 py-12 md:flex-row md:items-center md:justify-between">
+      <p class="flex items-center gap-2.5"><Icono nombre="hoja" class="size-6" /> <span class="serif text-2xl">Refugio Los Coihues</span></p>
+      <p class="text-sm opacity-75">Página armada por <a href={ruta('/')} class="underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
+    </div>
+  </footer>
+</Demo>
+
+<style is:global>
+  .cabanas {
+    --c-arena: #f6f1e7;
+    --c-papel: #ece5d6;
+    --c-bosque: #1f3a2c;
+    --c-musgo: #5b7a52;
+    --c-ambar: #e0a458;
+    --c-tinta: #1d2a22;
+    --c-tenue: #5c665e;
+    --c-linea: #d9d1bf;
+    background: var(--c-arena);
+    color: var(--c-tinta);
+    font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+  }
+  .cabanas [id] {
+    scroll-margin-top: 5.5rem;
+  }
+  .cabanas .cont {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .cabanas .cont {
+      padding-inline: 2.5rem;
+    }
+  }
+  .cabanas .serif {
+    font-family: 'Fraunces Variable', Georgia, serif;
+    font-weight: 400;
+    font-optical-sizing: auto;
+  }
+  .cabanas .titular {
+    font-size: clamp(2.4rem, 4.8vw, 3.9rem);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  .cabanas .rotulo {
+    color: var(--c-musgo);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  /* La cabecera queda transparente sobre la foto y se vuelve sólida al bajar. */
+  .cabanas .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    color: var(--c-arena);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  .cabanas .cabecera.solida {
+    background: color-mix(in srgb, var(--c-arena) 90%, transparent);
+    backdrop-filter: blur(12px);
+    color: var(--c-tinta);
+    box-shadow: 0 1px 0 var(--c-linea);
+  }
+  .cabanas .portada::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgb(10 20 14 / 0.55) 0%, transparent 30%),
+      linear-gradient(0deg, rgb(10 20 14 / 0.75) 10%, rgb(10 20 14 / 0.1) 60%);
+  }
+  .cabanas .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3.25rem;
+    padding: 0.8rem 1.6rem;
+    border-radius: 999px;
+    background: var(--c-bosque);
+    color: var(--c-arena);
+    font-weight: 600;
+    transition:
+      background-color 0.2s,
+      opacity 0.2s;
+  }
+  .cabanas .boton:hover {
+    background: #2c5340;
+  }
+  .cabanas .cabecera:not(.solida) .boton {
+    background: var(--c-arena);
+    color: var(--c-bosque);
+  }
+  .cabanas .boton-sm {
+    min-height: 2.6rem;
+    padding: 0.5rem 1.2rem;
+  }
+  .cabanas .boton[aria-disabled='true'] {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .cabanas .reserva {
+    background: #fffdf8;
+    box-shadow: 0 30px 70px -30px rgb(20 35 26 / 0.45);
+  }
+  .cabanas .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--c-linea);
+    border-radius: 1rem;
+    transition: border-color 0.15s;
+  }
+  .cabanas .campo:focus-within {
+    border-color: var(--c-bosque);
+  }
+  .cabanas .campo > span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-tenue);
+  }
+  .cabanas .campo :is(input, select) {
+    min-height: 1.9rem;
+    background: transparent;
+    font-weight: 600;
+    outline: none;
+  }
+  .cabanas .tarjeta {
+    background: #fffdf8;
+    transition:
+      box-shadow 0.3s,
+      transform 0.3s;
+  }
+  .cabanas .tarjeta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -35px rgb(20 35 26 / 0.5);
+  }
+  .cabanas .carrusel {
+    scrollbar-width: none;
+  }
+  .cabanas .carrusel::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  import { precio, waLink } from '../../lib/formato';
+
+  const form = document.getElementById('reserva') as HTMLFormElement;
+  const cfg = JSON.parse(form.dataset.config!) as {
+    numero: string;
+    intro: string;
+    cabanas: { id: string; nombre: string; personas: number; noche: number }[];
+  };
+  const el = <T extends Element>(n: string) => form.elements.namedItem(n) as unknown as T;
+  const llegada = el<HTMLInputElement>('llegada');
+  const salida = el<HTMLInputElement>('salida');
+  const huespedes = el<HTMLSelectElement>('huespedes');
+  const cabana = el<HTMLSelectElement>('cabana');
+  const resumen = form.querySelector('[data-resumen]') as HTMLElement;
+  const enviar = form.querySelector('[data-enviar]') as HTMLAnchorElement;
+
+  const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const desdeIso = (s: string) => {
+    const [a, m, d] = s.split('-').map(Number);
+    return new Date(a, m - 1, d);
+  };
+  const corta = new Intl.DateTimeFormat('es-CL', { weekday: 'short', day: 'numeric', month: 'short' });
+  const MINIMO = 2;
+
+  const hoy = new Date();
+  llegada.min = iso(hoy);
+
+  // Solo se ofrecen las cabañas en que caben los huéspedes.
+  const filtrarCabanas = () => {
+    const n = Number(huespedes.value);
+    [...cabana.options].forEach((op) => {
+      const c = cfg.cabanas.find((x) => x.id === op.value)!;
+      op.disabled = c.personas < n;
+    });
+    if (cabana.selectedOptions[0]?.disabled) {
+      const primera = [...cabana.options].find((op) => !op.disabled);
+      if (primera) cabana.value = primera.value;
+    }
+  };
+
+  const actualizar = () => {
+    if (llegada.value) {
+      const min = desdeIso(llegada.value);
+      min.setDate(min.getDate() + MINIMO);
+      salida.min = iso(min);
+      if (!salida.value || salida.value < salida.min) salida.value = salida.min;
+    }
+    filtrarCabanas();
+
+    const c = cfg.cabanas.find((x) => x.id === cabana.value)!;
+    const noches = llegada.value && salida.value ? Math.round((desdeIso(salida.value).getTime() - desdeIso(llegada.value).getTime()) / 86400000) : 0;
+    const listo = noches >= MINIMO;
+    enviar.setAttribute('aria-disabled', String(!listo));
+
+    if (!listo) {
+      resumen.textContent = llegada.value ? `La estadía mínima es de ${MINIMO} noches.` : 'Elige tus fechas para ver el total de tu estadía.';
+      enviar.removeAttribute('href');
+      return;
+    }
+    const total = noches * c.noche;
+    resumen.innerHTML = '';
+    const fuerte = document.createElement('strong');
+    fuerte.className = 'serif text-2xl text-[var(--c-tinta)]';
+    fuerte.textContent = precio(total);
+    resumen.append(`${c.nombre} · ${noches} noches · `, fuerte, ' total');
+
+    const texto = [
+      cfg.intro,
+      `- Cabaña: ${c.nombre}`,
+      `- Llegada: ${corta.format(desdeIso(llegada.value))}`,
+      `- Salida: ${corta.format(desdeIso(salida.value))} (${noches} noches)`,
+      `- Huéspedes: ${huespedes.value}`,
+      `- Total: ${precio(total)} (${precio(c.noche)} por noche)`,
+    ];
+    enviar.href = waLink(cfg.numero, texto.join('\n'));
+  };
+
+  form.addEventListener('change', actualizar);
+  form.addEventListener('input', actualizar);
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-elegir]').forEach((a) =>
+    a.addEventListener('click', () => {
+      const c = cfg.cabanas.find((x) => x.id === a.dataset.elegir)!;
+      if (Number(huespedes.value) > c.personas) huespedes.value = String(c.personas);
+      cabana.value = c.id;
+      actualizar();
+    }),
+  );
+
+  // Cabecera sólida al salir de la portada.
+  const cabecera = document.querySelector('.cabanas .cabecera')!;
+  const marcar = () => cabecera.classList.toggle('solida', window.scrollY > 80);
+  window.addEventListener('scroll', marcar, { passive: true });
+  marcar();
+
+  actualizar();
+</script>

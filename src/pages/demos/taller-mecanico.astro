@@ -1,0 +1,715 @@
+---
+// Ejemplo: taller mecánico con cotizador. La cotización llega por WhatsApp con el
+// vehículo, los servicios y el día en que el cliente quiere dejar el auto.
+import '@fontsource-variable/inter/wght.css';
+import Demo from '../../layouts/Demo.astro';
+import Icono, { type NombreIcono } from '../../components/Icono.astro';
+import Foto from '../../components/negocio/Foto.astro';
+import MiniMapa from '../../components/negocio/MiniMapa.astro';
+import Preguntas from '../../components/Preguntas.astro';
+import { introDemo } from '../../data/demos';
+import { site } from '../../data/site';
+import { precio, ruta } from '../../lib/formato';
+
+const nombre = 'Torque Automotriz';
+const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
+const F = {
+  portada: foto('1625047509248-ec889cbff17f', 'Mecánico revisando el motor de un auto con el capó abierto'),
+  taller: foto('1530046339160-ce3e530c7d2f', 'Interior del taller con herramientas ordenadas en el muro'),
+  motor: foto('1486262715619-67b85e0b08d3', 'Correas y poleas del motor de un auto'),
+};
+
+const servicios: { id: string; icono: NombreIcono; nombre: string; texto: string; desde: number }[] = [
+  { id: 'mantencion', icono: 'herramienta', nombre: 'Mantención por kilometraje', texto: 'Según la pauta de tu marca, sin perder la garantía de fábrica.', desde: 69990 },
+  { id: 'aceite', icono: 'rayo', nombre: 'Cambio de aceite y filtros', texto: 'Aceite sintético o semisintético, filtros y revisión de 20 puntos.', desde: 34990 },
+  { id: 'frenos', icono: 'escudo', nombre: 'Frenos', texto: 'Pastillas, discos y líquido. Revisión gratis con cualquier servicio.', desde: 39990 },
+  { id: 'scanner', icono: 'codigo', nombre: 'Diagnóstico con scanner', texto: 'Leemos los códigos de falla y te explicamos qué tiene tu auto.', desde: 19990 },
+  { id: 'suspension', icono: 'auto', nombre: 'Suspensión y dirección', texto: 'Amortiguadores, rótulas, terminales y alineación.', desde: 49990 },
+  { id: 'electrico', icono: 'rayo', nombre: 'Electricidad y batería', texto: 'Batería, alternador, motor de arranque y luces.', desde: 24990 },
+  { id: 'embrague', icono: 'herramienta', nombre: 'Embrague', texto: 'Kit de embrague completo con mano de obra incluida.', desde: 189990 },
+  { id: 'revision', icono: 'check', nombre: 'Pre revisión técnica', texto: 'Dejamos tu auto listo para pasar la revisión a la primera.', desde: 24990 },
+];
+const marcas = ['Chevrolet', 'Citroën', 'Ford', 'Hyundai', 'Kia', 'Mazda', 'Mitsubishi', 'Nissan', 'Peugeot', 'Renault', 'Subaru', 'Suzuki', 'Toyota', 'Volkswagen', 'Otra'];
+const anioActual = 2026;
+const anios = Array.from({ length: 25 }, (_, i) => anioActual - i);
+
+const pasos = [
+  { titulo: 'Cotizas online', texto: 'Nos cuentas qué auto tienes y qué necesita. Te respondemos el mismo día.' },
+  { titulo: 'Agendas tu hora', texto: 'Dejas el auto a primera hora o te lo vamos a buscar si estás cerca.' },
+  { titulo: 'Diagnóstico y presupuesto', texto: 'Te mandamos fotos y el detalle. No tocamos nada sin tu aprobación.' },
+  { titulo: 'Retiras con garantía', texto: 'Te avisamos cuando está listo. Todos los trabajos tienen 3 meses de garantía.' },
+];
+const resenas = [
+  { autor: 'Carolina M.', auto: 'Hyundai Accent 2019', texto: 'Me mandaron fotos de las pastillas gastadas antes de cambiarlas. Por fin un taller en el que confío.' },
+  { autor: 'Rodrigo P.', auto: 'Toyota Hilux 2016', texto: 'Coticé un domingo en la noche y el lunes a las 9 ya tenía hora. Mantención impecable y a buen precio.' },
+  { autor: 'Javiera S.', auto: 'Suzuki Swift 2021', texto: 'Me avisaron por WhatsApp en cada etapa. Retiré el auto el mismo día, como me dijeron.' },
+];
+const preguntas = [
+  { p: '¿Pierdo la garantía de fábrica si hago la mantención con ustedes?', r: 'No. Seguimos la pauta de tu marca, usamos repuestos de calidad equivalente y timbramos tu libro de mantenciones.' },
+  { p: '¿Cuánto se demora una mantención?', r: 'Entre 2 y 4 horas según el kilometraje. Si dejas el auto a primera hora, lo retiras el mismo día.' },
+  { p: '¿Puedo llevar mis propios repuestos?', r: 'Sí. En ese caso cobramos solo la mano de obra y la garantía cubre el trabajo, no la pieza.' },
+  { p: '¿Qué medios de pago aceptan?', r: 'Efectivo, débito, crédito hasta 3 cuotas sin interés y transferencia. Emitimos boleta y factura.' },
+];
+const horarios = [
+  { dias: 'Lunes a viernes', horas: '8:30 a 18:30' },
+  { dias: 'Sábado', horas: '9:00 a 13:00' },
+];
+
+const config = {
+  numero: site.whatsapp,
+  intro: introDemo(nombre, 'cotización'),
+  servicios: servicios.map(({ id, nombre, desde }) => ({ id, nombre, desde })),
+};
+const datos = {
+  '@type': 'AutoRepair',
+  name: nombre,
+  address: { '@type': 'PostalAddress', streetAddress: 'Dirección de ejemplo 2020', addressLocality: 'Maipú', addressCountry: 'CL' },
+  openingHours: ['Mo-Fr 08:30-18:30', 'Sa 09:00-13:00'],
+  priceRange: '$$',
+};
+---
+
+<Demo
+  nombre={nombre}
+  rubro="Taller mecánico"
+  descripcion="Taller mecánico multimarca en Maipú. Mantenciones, frenos, diagnóstico con scanner y más. Cotiza online y te respondemos el mismo día."
+  themeColor="#101317"
+  bodyClass="taller"
+  datos={datos}
+>
+  <div class="bg-[var(--t-oscuro)] text-sm text-white/70">
+    <div class="cont flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-2">
+      <p class="flex items-center gap-2"><Icono nombre="reloj" class="size-4" /> Lun a vie 8:30 a 18:30 · Sáb 9:00 a 13:00</p>
+      <p class="hidden sm:block">Retiro y entrega de tu auto en Maipú y Cerrillos</p>
+    </div>
+  </div>
+
+  <header class="cabecera">
+    <div class="cont flex items-center justify-between gap-6 py-3.5">
+      <a href="#" class="flex items-center gap-3">
+        <span class="flex size-10 items-center justify-center rounded-lg bg-[var(--t-naranjo)] text-white">
+          <Icono nombre="herramienta" class="size-6" />
+        </span>
+        <span class="leading-none">
+          <span class="ancho block text-xl tracking-[-0.01em]">TORQUE</span>
+          <span class="block text-[0.6rem] font-semibold tracking-[0.34em] text-[var(--t-tenue)]">AUTOMOTRIZ</span>
+        </span>
+      </a>
+      <nav aria-label="Secciones" class="hidden lg:block">
+        <ul class="flex gap-8 text-[0.95rem] font-medium">
+          <li><a href="#servicios" class="hover:text-[var(--t-naranjo)]">Servicios</a></li>
+          <li><a href="#proceso" class="hover:text-[var(--t-naranjo)]">Cómo trabajamos</a></li>
+          <li><a href="#opiniones" class="hover:text-[var(--t-naranjo)]">Opiniones</a></li>
+          <li><a href="#ubicacion" class="hover:text-[var(--t-naranjo)]">Ubicación</a></li>
+        </ul>
+      </nav>
+      <a href="#cotizar" class="boton boton-sm">Cotizar ahora</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Portada -->
+    <section class="cont grid items-center gap-12 pt-12 pb-16 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pt-20 lg:pb-24">
+      <div>
+        <p class="inline-flex items-center gap-2 rounded-full border border-[var(--t-linea)] bg-white px-3.5 py-1.5 text-sm font-medium">
+          <span class="relative flex size-2"><span class="absolute inset-0 animate-ping rounded-full bg-emerald-500 opacity-60"></span><span class="relative size-2 rounded-full bg-emerald-500"></span></span>
+          Taller multimarca en Maipú · Abierto hoy
+        </p>
+        <h1 class="ancho mt-6 text-[clamp(2.7rem,6.4vw,5.3rem)] leading-[0.95] tracking-[-0.035em]">
+          Tu auto en manos <span class="text-[var(--t-naranjo)]">expertas.</span>
+        </h1>
+        <p class="mt-6 max-w-[46ch] text-lg leading-relaxed text-[var(--t-tenue)] md:text-xl">
+          Mantenciones, frenos y diagnóstico con scanner. Presupuesto claro antes de empezar y aviso por WhatsApp en cada etapa.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a href="#cotizar" class="boton">Cotiza en 1 minuto <Icono nombre="flecha" class="size-5" /></a>
+          <a href="#servicios" class="boton boton-claro">Ver servicios</a>
+        </div>
+        <ul class="mt-10 grid gap-4 text-[0.95rem] sm:grid-cols-3">
+          {
+            [
+              ['escudo', '3 meses de garantía'],
+              ['codigo', 'Scanner computarizado'],
+              ['chat', 'Presupuesto antes de reparar'],
+            ].map(([i, t]) => (
+              <li class="flex items-center gap-2.5 font-medium">
+                <Icono nombre={i as NombreIcono} class="size-5 shrink-0 text-[var(--t-naranjo)]" />
+                {t}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="relative">
+        <div class="overflow-hidden rounded-2xl">
+          <Foto foto={F.portada} proporcion={1.05} prioridad sizes="(min-width: 1024px) 45vw, 100vw" anchos={[600, 1000, 1400]} />
+        </div>
+        <div class="seguimiento absolute right-4 -bottom-8 left-4 rounded-xl p-5 sm:right-auto sm:-left-8 sm:w-[21rem]">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-semibold">Hyundai Accent · <span class="font-mono">KJPL·42</span></p>
+            <span class="rounded-full bg-[var(--t-naranjo)]/12 px-2 py-0.5 text-xs font-semibold text-[var(--t-naranjo)]">En vivo</span>
+          </div>
+          <ol class="mt-4 space-y-2.5 text-sm">
+            <li class="flex items-center gap-2.5"><span class="punto hecho"><Icono nombre="check" class="size-3" /></span> Recibido · 8:42</li>
+            <li class="flex items-center gap-2.5"><span class="punto hecho"><Icono nombre="check" class="size-3" /></span> Diagnóstico y presupuesto aprobado</li>
+            <li class="flex items-center gap-2.5 font-semibold"><span class="punto actual"></span> Cambio de pastillas y discos</li>
+            <li class="flex items-center gap-2.5 text-[var(--t-tenue)]"><span class="punto"></span> Listo para retiro</li>
+          </ol>
+          <p class="mt-4 border-t border-[var(--t-linea)] pt-3 text-xs text-[var(--t-tenue)]">Te avisamos por WhatsApp en cada etapa.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cifras -->
+    <section class="mt-10 bg-[var(--t-oscuro)] text-white">
+      <dl class="cont grid grid-cols-2 gap-y-8 py-12 lg:grid-cols-4">
+        {
+          [
+            ['+12', 'años reparando autos'],
+            ['+4.800', 'autos atendidos'],
+            ['4,8', 'de nota en Google'],
+            ['3 meses', 'de garantía en todo'],
+          ].map(([n, t]) => (
+            <div class="border-l-2 border-[var(--t-naranjo)] pl-5">
+              <dt class="ancho text-[clamp(1.9rem,3.6vw,2.8rem)] leading-none">{n}</dt>
+              <dd class="mt-2 text-white/65">{t}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" class="cont py-20 lg:py-28">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="rotulo">Servicios</p>
+          <h2 class="ancho titular mt-3">Todo lo que tu auto necesita</h2>
+        </div>
+        <p class="max-w-[40ch] text-[var(--t-tenue)]">Precios referenciales para autos de ciudad. Te confirmamos el valor exacto según tu modelo.</p>
+      </div>
+      <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          servicios.map((s) => (
+            <li class="tarjeta group flex flex-col rounded-2xl p-6">
+              <span class="flex size-11 items-center justify-center rounded-xl bg-[var(--t-suave)] text-[var(--t-naranjo)] transition-colors group-hover:bg-[var(--t-naranjo)] group-hover:text-white">
+                <Icono nombre={s.icono} class="size-5" />
+              </span>
+              <h3 class="mt-5 text-lg leading-snug font-bold">{s.nombre}</h3>
+              <p class="mt-2 text-[0.95rem] text-[var(--t-tenue)]">{s.texto}</p>
+              <div class="mt-auto flex items-end justify-between gap-3 pt-6">
+                <p class="text-sm text-[var(--t-tenue)]">
+                  desde <span class="ancho block text-xl text-[var(--t-texto)]">{precio(s.desde)}</span>
+                </p>
+                <a href="#cotizar" data-elegir={s.id} class="flex items-center gap-1 text-sm font-semibold text-[var(--t-naranjo)]">
+                  Cotizar <Icono nombre="flecha" class="size-4" />
+                </a>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Cotizador -->
+    <section id="cotizar" class="cotizar py-20 text-white lg:py-28">
+      <div class="cont grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <div>
+          <p class="rotulo">Cotizador</p>
+          <h2 class="ancho titular mt-3">Cotiza tu auto en 1 minuto</h2>
+          <p class="mt-5 max-w-[40ch] text-lg text-white/70">
+            Completa los datos y te llega la cotización por WhatsApp el mismo día, con el valor exacto para tu modelo.
+          </p>
+          <ul class="mt-8 space-y-3 text-white/80">
+            <li class="flex gap-3"><Icono nombre="check" class="mt-0.5 size-5 shrink-0 text-[var(--t-naranjo)]" /> Sin compromiso, sin llamadas.</li>
+            <li class="flex gap-3"><Icono nombre="check" class="mt-0.5 size-5 shrink-0 text-[var(--t-naranjo)]" /> Puedes marcar varios servicios.</li>
+            <li class="flex gap-3"><Icono nombre="check" class="mt-0.5 size-5 shrink-0 text-[var(--t-naranjo)]" /> Te ofrecemos la primera hora disponible.</li>
+          </ul>
+          <div class="mt-10 hidden overflow-hidden rounded-2xl lg:block">
+            <Foto foto={F.motor} proporcion={16 / 10} sizes="35vw" anchos={[500, 800, 1100]} />
+          </div>
+        </div>
+
+        <form id="cotizador" data-config={JSON.stringify(config)} class="formulario rounded-2xl p-6 sm:p-8" novalidate>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="campo">
+              <span>Marca</span>
+              <select name="marca" required>
+                <option value="">Elige la marca</option>
+                {marcas.map((m) => <option>{m}</option>)}
+              </select>
+            </label>
+            <label class="campo">
+              <span>Modelo</span>
+              <input name="modelo" placeholder="Ej: Yaris, Accent, Swift" autocomplete="off" />
+            </label>
+            <label class="campo">
+              <span>Año</span>
+              <select name="anio">
+                <option value="">Elige el año</option>
+                {anios.map((a) => <option>{a}</option>)}
+              </select>
+            </label>
+            <label class="campo">
+              <span>Kilometraje aproximado</span>
+              <input name="km" inputmode="numeric" placeholder="Ej: 60.000" autocomplete="off" />
+            </label>
+          </div>
+
+          <fieldset class="mt-6">
+            <legend class="text-sm font-semibold text-white/80">¿Qué necesita tu auto?</legend>
+            <div class="mt-3 flex flex-wrap gap-2">
+              {
+                servicios.map((s) => (
+                  <label class="chip">
+                    <input type="checkbox" name="servicio" value={s.id} class="sr-only" />
+                    <Icono nombre="check" class="marca-check size-4" />
+                    {s.nombre}
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <label class="campo mt-6">
+            <span>Cuéntanos qué le pasa (opcional)</span>
+            <textarea name="detalle" rows="3" placeholder="Ej: suena al frenar, se enciende la luz del motor…"></textarea>
+          </label>
+
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <label class="campo">
+              <span>Día en que quieres traerlo</span>
+              <input type="date" name="fecha" />
+            </label>
+            <label class="campo">
+              <span>Tu nombre</span>
+              <input name="cliente" autocomplete="given-name" placeholder="Para saludarte" />
+            </label>
+          </div>
+
+          <div class="mt-8 flex flex-col gap-5 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              <span class="block text-sm text-white/60">Valor referencial</span>
+              <span class="ancho text-3xl"><span class="text-base font-medium text-white/60">desde </span><span data-total>$0</span></span>
+            </p>
+            <a data-enviar class="boton" aria-disabled="true" target="_blank" rel="noopener">
+              <Icono nombre="chat" class="size-5" />
+              Enviar cotización
+            </a>
+          </div>
+          <p data-falta class="mt-3 text-sm text-white/60 sm:text-right">Elige la marca y al menos un servicio.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Proceso -->
+    <section id="proceso" class="cont py-20 lg:py-28">
+      <p class="rotulo">Cómo trabajamos</p>
+      <h2 class="ancho titular mt-3 max-w-[18ch]">Sin sorpresas en la cuenta</h2>
+      <ol class="proceso mt-14 grid gap-10 md:grid-cols-4 md:gap-6">
+        {
+          pasos.map((p, i) => (
+            <li class="relative">
+              <span class="ancho relative z-[1] flex size-12 items-center justify-center rounded-full bg-[var(--t-naranjo)] text-lg text-white ring-8 ring-[var(--t-fondo)]">
+                {i + 1}
+              </span>
+              <h3 class="mt-5 text-lg font-bold">{p.titulo}</h3>
+              <p class="mt-2 text-[var(--t-tenue)]">{p.texto}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- Nosotros -->
+    <section class="bg-white py-20 lg:py-28">
+      <div class="cont grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <div class="overflow-hidden rounded-2xl">
+          <Foto foto={F.taller} proporcion={4 / 3} sizes="(min-width: 1024px) 50vw, 100vw" anchos={[600, 900, 1300]} />
+        </div>
+        <div>
+          <p class="rotulo">El taller</p>
+          <h2 class="ancho titular mt-3">Mecánicos de confianza, desde 2014</h2>
+          <p class="mt-6 text-lg leading-relaxed text-[var(--t-tenue)]">
+            Somos un taller familiar con cinco mecánicos certificados. Trabajamos con todas las marcas y te explicamos cada
+            reparación con fotos, para que sepas exactamente en qué estás invirtiendo.
+          </p>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              ['Repuestos originales o alternativos, tú eliges', 'Libro de mantenciones timbrado', 'Factura para empresas y flotas', 'Retiro y entrega a domicilio'].map((t) => (
+                <li class="flex gap-3">
+                  <Icono nombre="check" class="mt-0.5 size-5 shrink-0 text-[var(--t-naranjo)]" />
+                  {t}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Opiniones -->
+    <section id="opiniones" class="cont py-20 lg:py-28">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="rotulo">Opiniones</p>
+          <h2 class="ancho titular mt-3">4,8 de 5 en Google</h2>
+        </div>
+        <p class="flex gap-1 text-[var(--t-naranjo)]">{[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-6 fill-current" />)}</p>
+      </div>
+      <ul class="mt-12 grid gap-4 md:grid-cols-3">
+        {
+          resenas.map((r) => (
+            <li class="tarjeta flex flex-col rounded-2xl p-7">
+              <p class="flex gap-0.5 text-[var(--t-naranjo)]">{[1, 2, 3, 4, 5].map(() => <Icono nombre="estrella" class="size-4 fill-current" />)}</p>
+              <blockquote class="mt-4 text-lg leading-relaxed">“{r.texto}”</blockquote>
+              <p class="mt-auto pt-6 text-sm">
+                <span class="font-semibold">{r.autor}</span> <span class="text-[var(--t-tenue)]">· {r.auto}</span>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- Preguntas -->
+    <section class="border-t border-[var(--t-linea)] py-20 lg:py-24" style="--borde: var(--t-linea)">
+      <div class="cont grid gap-10 lg:grid-cols-[1fr_2fr]">
+        <h2 class="ancho titular">Preguntas frecuentes</h2>
+        <Preguntas items={preguntas} />
+      </div>
+    </section>
+
+    <!-- Ubicación -->
+    <section id="ubicacion" class="bg-white py-20 lg:py-24">
+      <div class="cont grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-center">
+        <div>
+          <p class="rotulo">Ubicación</p>
+          <h2 class="ancho titular mt-3">Estamos en Maipú</h2>
+          <p class="mt-5 flex gap-2 text-lg">
+            <Icono nombre="pin" class="mt-1 size-5 shrink-0 text-[var(--t-naranjo)]" />
+            Dirección de ejemplo 2020, a pasos de la autopista.
+          </p>
+          <dl class="mt-8">
+            {
+              horarios.map((h) => (
+                <div class="flex justify-between gap-4 border-b border-[var(--t-linea)] py-3">
+                  <dt class="text-[var(--t-tenue)]">{h.dias}</dt>
+                  <dd class="font-semibold">{h.horas}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <a href="#cotizar" class="boton mt-8">Cotizar ahora</a>
+        </div>
+        <div>
+          <MiniMapa color="#ff5a1f" nombre={nombre} fondo="#ecebe7" parque="#cfdcc6" avenida="#ffd9c7" />
+          <p class="mt-3 text-sm text-[var(--t-tenue)]">Mapa de referencia. En tu página va el mapa de Google con tu dirección.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[var(--t-oscuro)] text-white/70">
+    <div class="cont flex flex-col gap-6 py-12 md:flex-row md:items-center md:justify-between">
+      <p class="flex items-center gap-3 text-white">
+        <span class="flex size-9 items-center justify-center rounded-lg bg-[var(--t-naranjo)]"><Icono nombre="herramienta" class="size-5" /></span>
+        <span class="ancho text-lg">TORQUE AUTOMOTRIZ</span>
+      </p>
+      <p class="text-sm">Página armada por <a href={ruta('/')} class="text-white underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
+    </div>
+  </footer>
+
+  <a href="#cotizar" class="boton barra-movil">Cotizar mi auto <Icono nombre="flecha" class="size-5" /></a>
+</Demo>
+
+<style is:global>
+  .taller {
+    --t-fondo: #f1f1ee;
+    --t-suave: #fff1eb;
+    --t-texto: #101317;
+    --t-tenue: #5b6068;
+    --t-linea: #dddcd6;
+    --t-naranjo: #ff5a1f;
+    --t-oscuro: #101317;
+    background: var(--t-fondo);
+    color: var(--t-texto);
+    font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+  }
+  .taller [id] {
+    scroll-margin-top: 5rem;
+  }
+  .taller .cont {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .taller .cont {
+      padding-inline: 2.5rem;
+    }
+  }
+  .taller .ancho {
+    font-family: var(--font-negocio);
+    font-stretch: 118%;
+    font-weight: 800;
+  }
+  .taller .titular {
+    font-size: clamp(2.1rem, 4.2vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .taller .rotulo {
+    color: var(--t-naranjo);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .taller .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgb(255 255 255 / 0.86);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--t-linea);
+  }
+  .taller .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3.25rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.75rem;
+    background: var(--t-naranjo);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 8px 20px -10px var(--t-naranjo);
+    transition:
+      background-color 0.2s,
+      transform 0.2s,
+      opacity 0.2s;
+  }
+  .taller .boton:hover {
+    background: #e64a12;
+    transform: translateY(-1px);
+  }
+  .taller .boton-claro {
+    background: #fff;
+    color: var(--t-texto);
+    box-shadow: inset 0 0 0 1px var(--t-linea);
+  }
+  .taller .boton-claro:hover {
+    background: var(--t-texto);
+    color: #fff;
+  }
+  .taller .boton-sm {
+    min-height: 2.6rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.92rem;
+  }
+  .taller .boton[aria-disabled='true'] {
+    opacity: 0.4;
+    pointer-events: none;
+    box-shadow: none;
+  }
+  .taller .tarjeta {
+    background: #fff;
+    border: 1px solid var(--t-linea);
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s,
+      transform 0.2s;
+  }
+  .taller .tarjeta:hover {
+    border-color: color-mix(in srgb, var(--t-naranjo) 40%, var(--t-linea));
+    box-shadow: 0 18px 40px -24px rgb(16 19 23 / 0.35);
+    transform: translateY(-2px);
+  }
+  .taller .seguimiento {
+    background: rgb(255 255 255 / 0.94);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--t-linea);
+    box-shadow: 0 24px 50px -20px rgb(16 19 23 / 0.45);
+  }
+  .taller .punto {
+    display: flex;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--t-linea);
+    border-radius: 999px;
+  }
+  .taller .punto.hecho {
+    border-color: #16a34a;
+    background: #16a34a;
+    color: #fff;
+  }
+  .taller .punto.actual {
+    border-color: var(--t-naranjo);
+    box-shadow: inset 0 0 0 3px #fff;
+    background: var(--t-naranjo);
+  }
+  .taller .cotizar {
+    background:
+      radial-gradient(60rem 30rem at 85% 0%, rgb(255 90 31 / 0.16), transparent 60%),
+      var(--t-oscuro);
+  }
+  .taller .formulario {
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid rgb(255 255 255 / 0.1);
+  }
+  .taller .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .taller .campo > span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.8);
+  }
+  .taller .campo :is(input, select, textarea) {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background: rgb(255 255 255 / 0.06);
+    color: #fff;
+    color-scheme: dark;
+  }
+  .taller .campo select option {
+    background: var(--t-oscuro);
+  }
+  .taller .campo :is(input, select, textarea):focus {
+    outline: 2px solid var(--t-naranjo);
+    outline-offset: 0;
+    border-color: transparent;
+  }
+  .taller .chip {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    font-size: 0.9rem;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s;
+  }
+  .taller .chip .marca-check {
+    display: none;
+  }
+  .taller .chip:has(input:checked) {
+    background: var(--t-naranjo);
+    border-color: var(--t-naranjo);
+    font-weight: 600;
+  }
+  .taller .chip:has(input:checked) .marca-check {
+    display: block;
+  }
+  .taller .chip:has(input:focus-visible) {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+  @media (min-width: 768px) {
+    .taller .proceso::before {
+      content: '';
+      position: absolute;
+      left: 1.5rem;
+      right: 1.5rem;
+      top: 1.5rem;
+      border-top: 2px dashed var(--t-linea);
+    }
+    .taller .proceso {
+      position: relative;
+    }
+  }
+  .taller .barra-movil {
+    position: fixed;
+    inset: auto 1rem 1rem;
+    z-index: 40;
+  }
+  @media (min-width: 768px) {
+    .taller .barra-movil {
+      display: none;
+    }
+  }
+  @media (max-width: 767px) {
+    .taller footer {
+      padding-bottom: 5rem;
+    }
+  }
+</style>
+
+<script>
+  import { precio, waLink } from '../../lib/formato';
+
+  const form = document.getElementById('cotizador') as HTMLFormElement;
+  const cfg = JSON.parse(form.dataset.config!) as {
+    numero: string;
+    intro: string;
+    servicios: { id: string; nombre: string; desde: number }[];
+  };
+  const enviar = form.querySelector('[data-enviar]') as HTMLAnchorElement;
+  const total = form.querySelector('[data-total]') as HTMLElement;
+  const falta = form.querySelector('[data-falta]') as HTMLElement;
+  const campo = (n: string) => (form.elements.namedItem(n) as HTMLInputElement).value.trim();
+
+  // No se puede elegir un día pasado.
+  const hoy = new Date();
+  (form.elements.namedItem('fecha') as HTMLInputElement).min =
+    `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
+  const actualizar = () => {
+    const elegidos = [...form.querySelectorAll<HTMLInputElement>('input[name="servicio"]:checked')]
+      .map((i) => cfg.servicios.find((s) => s.id === i.value)!)
+      .filter(Boolean);
+    const suma = elegidos.reduce((s, x) => s + x.desde, 0);
+    total.textContent = precio(suma);
+
+    const marca = campo('marca');
+    const listo = !!marca && elegidos.length > 0;
+    enviar.setAttribute('aria-disabled', String(!listo));
+    falta.hidden = listo;
+    if (!listo) {
+      enviar.removeAttribute('href');
+      return;
+    }
+    const auto = [marca, campo('modelo'), campo('anio')].filter(Boolean).join(' ');
+    const fecha = campo('fecha');
+    const texto = [
+      cfg.intro,
+      `- Vehículo: ${auto}${campo('km') ? `, ${campo('km')} km` : ''}`,
+      `- Servicios: ${elegidos.map((s) => s.nombre).join(', ')}`,
+      `- Referencial: desde ${precio(suma)}`,
+      campo('detalle') && `- Detalle: ${campo('detalle')}`,
+      fecha && `- Quiero traerlo el: ${fecha.split('-').reverse().join('-')}`,
+      campo('cliente') && `- Nombre: ${campo('cliente')}`,
+    ].filter(Boolean);
+    enviar.href = waLink(cfg.numero, texto.join('\n'));
+  };
+
+  form.addEventListener('input', actualizar);
+  form.addEventListener('change', actualizar);
+
+  // "Cotizar" en una tarjeta de servicio lo deja marcado en el formulario.
+  document.querySelectorAll<HTMLAnchorElement>('[data-elegir]').forEach((a) =>
+    a.addEventListener('click', () => {
+      const input = form.querySelector<HTMLInputElement>(`input[name="servicio"][value="${a.dataset.elegir}"]`);
+      if (input) input.checked = true;
+      actualizar();
+    }),
+  );
+
+  actualizar();
+</script>

@@ -4,16 +4,18 @@ import { site } from '../data/site';
 import { waLink } from '../lib/formato';
 ---
 
-<section id="contacto" class="bg-tinta py-20 text-white lg:py-28">
-  <div class="wrap grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:items-end">
-    <div>
-      <h2 class="display text-[clamp(2.2rem,5vw,3.8rem)]">¿Armamos la página de tu negocio?</h2>
-      <p class="mt-6 max-w-[44ch] text-[1.2rem] text-white/85">
-        Escríbenos y coordinamos una conversación de 20 minutos, en tu local o por videollamada. Te mostramos la
-        portada de tu página antes de que pagues nada.
+<section id="contacto" class="contacto relative isolate overflow-hidden py-24 text-white lg:py-32">
+  <div class="cuadricula absolute inset-0 -z-10" style="--linea-cuadricula: rgb(255 255 255 / 0.05)" aria-hidden="true"></div>
+  <div class="wrap grid gap-14 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+    <div class="revelar">
+      <p class="antetitulo text-[#8fbde3]!">Hablemos</p>
+      <h2 class="display mt-5 text-[clamp(2.4rem,5.4vw,4.2rem)]">¿Hacemos crecer tu negocio?</h2>
+      <p class="mt-6 max-w-[46ch] text-[1.2rem] text-white/80">
+        Escríbenos y coordinamos una videollamada de 20 minutos. Te contamos cómo podemos traerte más clientes y te
+        mostramos cómo se vería tu página, sin costo y sin compromiso.
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a class="btn btn-azul" href={waLink(site.whatsapp, site.mensajeWhatsapp)}>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a class="btn btn-blanco" href={waLink(site.whatsapp, site.mensajeWhatsapp)}>
           <Icono nombre="chat" class="size-5" />
           Escríbenos por WhatsApp
         </a>
@@ -21,14 +23,14 @@ import { waLink } from '../lib/formato';
           site.agendaUrl && (
             <a class="btn btn-linea text-white hover:border-white hover:bg-white hover:text-tinta" href={site.agendaUrl}>
               <Icono nombre="calendario" class="size-5" />
-              Agendar una conversación
+              Agendar videollamada
             </a>
           )
         }
       </div>
       {
         site.correo && (
-          <p class="mt-6 flex items-center gap-2 text-white/85">
+          <p class="mt-6 flex items-center gap-2 text-white/80">
             <Icono nombre="correo" class="size-5" />
             <a class="underline underline-offset-4 hover:text-white" href={`mailto:${site.correo}`}>
               {site.correo}
@@ -38,12 +40,30 @@ import { waLink } from '../lib/formato';
       }
     </div>
 
-    <div class="border-t border-white/20 pt-8 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
+    <div class="quienes revelar rounded-3xl p-8" style="--retraso: 150ms">
       <h3 class="text-xl font-bold">Quiénes somos</h3>
-      <p class="mt-3 text-white/85">
-        Somos dos desarrolladores que hacemos páginas web para negocios de barrio. Trabajamos con pocos clientes a
-        la vez, te explicamos todo sin palabras técnicas y te dejamos la página funcionando y a tu nombre.
+      <p class="mt-3 text-white/75">
+        Somos dos desarrolladores que ayudamos a negocios locales a vender más por internet. Trabajamos con pocos
+        clientes a la vez, te explicamos todo sin palabras técnicas y te dejamos la página funcionando y a tu nombre.
       </p>
+      <ul class="mt-6 space-y-2.5 text-white/85">
+        <li class="flex gap-3"><Icono nombre="check" class="mt-1 size-5 shrink-0 text-[#8fbde3]" /> Primera videollamada sin costo</li>
+        <li class="flex gap-3"><Icono nombre="check" class="mt-1 size-5 shrink-0 text-[#8fbde3]" /> Reuniones por videollamada, desde cualquier comuna</li>
+        <li class="flex gap-3"><Icono nombre="check" class="mt-1 size-5 shrink-0 text-[#8fbde3]" /> Ves el diseño antes de decidir</li>
+      </ul>
     </div>
   </div>
 </section>
+
+<style>
+  .contacto {
+    background:
+      radial-gradient(45rem 28rem at 10% 0%, rgb(47 111 163 / 0.4), transparent 60%),
+      var(--color-tinta);
+  }
+  .quienes {
+    background: rgb(255 255 255 / 0.05);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(6px);
+  }
+</style>
