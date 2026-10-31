@@ -10,7 +10,7 @@ import Foto from '../../components/negocio/Foto.astro';
 import Carro from '../../components/demo/Carro.astro';
 import { introDemo } from '../../data/demos';
 import { site } from '../../data/site';
-import { precio } from '../../lib/formato';
+import { precio, ruta } from '../../lib/formato';
 
 const nombre = 'Casa Lino';
 const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
@@ -273,7 +273,7 @@ const datos = {
       </div>
     </div>
     <div class="cont border-t border-white/10 py-6 text-sm text-[var(--r-fondo)]/60">
-      Página armada por <a href="/" class="text-[var(--r-fondo)] underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash
+      Página armada por <a href={ruta('/')} class="text-[var(--r-fondo)] underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash
     </div>
   </footer>
 

@@ -9,7 +9,7 @@ import MiniMapa from '../../components/negocio/MiniMapa.astro';
 import Carro from '../../components/demo/Carro.astro';
 import { introDemo } from '../../data/demos';
 import { site } from '../../data/site';
-import { precio, waLink } from '../../lib/formato';
+import { precio, waLink, ruta } from '../../lib/formato';
 
 const nombre = 'Ferretería El Perno';
 const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
@@ -274,7 +274,7 @@ const datos = {
   <footer class="bg-[var(--f-negro)] text-white/70">
     <div class="cont flex flex-col gap-4 py-10 text-sm md:flex-row md:items-center md:justify-between">
       <p><span class="font-black text-white">El Perno</span> · Ferretería en La Florida desde 1998</p>
-      <p>Página armada por <a href="/" class="text-white underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
+      <p>Página armada por <a href={ruta('/')} class="text-white underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
     </div>
   </footer>
 

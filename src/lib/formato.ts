@@ -1,5 +1,13 @@
 // Utilidades compartidas.
 
+/**
+ * Ruta interna del sitio con la base configurada en astro.config.mjs.
+ * "/demos/barberia/" -> "/teloarmo/demos/barberia/" en GitHub Pages, o igual con dominio propio.
+ */
+export function ruta(camino: string): string {
+  return import.meta.env.BASE_URL.replace(/\/$/, '') + camino;
+}
+
 /** Link de WhatsApp con mensaje prellenado. `numero`: solo dígitos con código de país (569...). */
 export function waLink(numero: string, texto?: string): string {
   const base = `https://wa.me/${numero.replace(/\D/g, '')}`;

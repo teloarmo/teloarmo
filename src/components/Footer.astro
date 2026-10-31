@@ -1,12 +1,13 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../data/site';
+import { ruta } from '../lib/formato';
 
 interface Props {
   enInicio?: boolean;
 }
 const { enInicio = true } = Astro.props;
-const pre = enInicio ? '' : '/';
+const pre = enInicio ? '' : ruta('/');
 ---
 
 <footer class="bg-tinta text-white">
@@ -21,7 +22,7 @@ const pre = enInicio ? '' : '/';
         <li><a class="hover:text-white hover:underline" href={`${pre}#precios`}>Precios</a></li>
         <li><a class="hover:text-white hover:underline" href={`${pre}#ejemplos`}>Ejemplos</a></li>
         <li><a class="hover:text-white hover:underline" href={`${pre}#preguntas`}>Preguntas</a></li>
-        <li><a class="hover:text-white hover:underline" href="/privacidad">Privacidad</a></li>
+        <li><a class="hover:text-white hover:underline" href={ruta('/privacidad')}>Privacidad</a></li>
         {
           site.instagram && (
             <li>

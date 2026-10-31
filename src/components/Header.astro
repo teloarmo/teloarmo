@@ -2,13 +2,13 @@
 import Logo from './Logo.astro';
 import Icono from './Icono.astro';
 import { site } from '../data/site';
-import { waLink } from '../lib/formato';
+import { waLink, ruta } from '../lib/formato';
 
 interface Props {
   enInicio?: boolean; // en la página principal los links son anclas
 }
 const { enInicio = true } = Astro.props;
-const pre = enInicio ? '' : '/';
+const pre = enInicio ? '' : ruta('/');
 const links = [
   { href: `${pre}#crecer`, texto: 'Qué logramos' },
   { href: `${pre}#ejemplos`, texto: 'Ejemplos' },
@@ -20,7 +20,7 @@ const links = [
 
 <header class="cabecera sticky top-0 z-50">
   <div class="wrap flex items-center justify-between gap-4 py-3.5">
-    <a href="/" aria-label={`${site.nombre}, ir al inicio`} class="rounded-md"><Logo /></a>
+    <a href={ruta('/')} aria-label={`${site.nombre}, ir al inicio`} class="rounded-md"><Logo /></a>
     <nav aria-label="Principal" class="hidden lg:block">
       <ul class="flex gap-1 text-base">
         {

@@ -4,6 +4,7 @@
 import { Image } from 'astro:assets';
 import Icono from './Icono.astro';
 import { demos } from '../data/demos';
+import { ruta } from '../lib/formato';
 ---
 
 <section id="ejemplos" class="py-24 lg:py-32">
@@ -23,7 +24,7 @@ import { demos } from '../data/demos';
       {
         demos.map((d, i) => (
           <li class:list={['revelar', i < 2 ? 'md:col-span-3' : 'md:col-span-2']} style={`--retraso:${i * 70}ms`}>
-            <a href={`/demos/${d.slug}/`} class="tarjeta-ejemplo group flex h-full flex-col">
+            <a href={ruta(`/demos/${d.slug}/`)} class="tarjeta-ejemplo group flex h-full flex-col">
               <div class="navegador">
                 <div class="flex items-center gap-3 px-3.5 py-2.5">
                   <span class="flex gap-1.5" aria-hidden="true">

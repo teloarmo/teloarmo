@@ -9,7 +9,7 @@ import MiniMapa from '../../components/negocio/MiniMapa.astro';
 import Preguntas from '../../components/Preguntas.astro';
 import { introDemo } from '../../data/demos';
 import { site } from '../../data/site';
-import { precio } from '../../lib/formato';
+import { precio, ruta } from '../../lib/formato';
 
 const nombre = 'Torque Automotriz';
 const foto = (id: string, alt: string) => ({ src: `https://images.unsplash.com/photo-${id}`, alt });
@@ -417,7 +417,7 @@ const datos = {
         <span class="flex size-9 items-center justify-center rounded-lg bg-[var(--t-naranjo)]"><Icono nombre="herramienta" class="size-5" /></span>
         <span class="ancho text-lg">TORQUE AUTOMOTRIZ</span>
       </p>
-      <p class="text-sm">Página armada por <a href="/" class="text-white underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
+      <p class="text-sm">Página armada por <a href={ruta('/')} class="text-white underline underline-offset-4">{site.nombre}</a> · Fotos: Unsplash</p>
     </div>
   </footer>
 

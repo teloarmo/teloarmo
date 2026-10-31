@@ -5,7 +5,7 @@ import Base from './Base.astro';
 import Icono from '../components/Icono.astro';
 import type { Negocio } from '../data/negocios/tipos';
 import { site } from '../data/site';
-import { waLink } from '../lib/formato';
+import { waLink, ruta } from '../lib/formato';
 
 interface Props {
   negocio: Negocio;
@@ -14,7 +14,7 @@ interface Props {
 }
 const { negocio: n, actual, titulo } = Astro.props;
 const c = n.colores;
-const base = `/demos/${n.slug}`;
+const base = ruta(`/demos/${n.slug}`);
 
 // En los ejemplos ficticios, todos los botones de WhatsApp llevan a TeLoArmo.
 const msgDemo = `Hola, vi el ejemplo de ${n.nombre} en ${site.nombre} y me gustaría una página así para mi negocio.`;
@@ -51,7 +51,7 @@ const vars = [
         <div class="wrap flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-2.5">
           <p>
             Ejemplo con un negocio ficticio, armado por{' '}
-            <a href="/" class="font-bold underline underline-offset-4">
+            <a href={ruta('/')} class="font-bold underline underline-offset-4">
               {site.nombre}
             </a>
             .
@@ -150,7 +150,7 @@ const vars = [
     <div class="wrap">
       <div class="flex flex-wrap justify-between gap-x-6 gap-y-1 border-t border-white/20 py-5 text-base text-white/75">
         <p>
-          Página armada por <a href="/" class="font-bold text-white underline underline-offset-4">{site.nombre}</a>
+          Página armada por <a href={ruta('/')} class="font-bold text-white underline underline-offset-4">{site.nombre}</a>
         </p>
         <p>Fotos: Unsplash</p>
       </div>

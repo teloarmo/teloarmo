@@ -5,7 +5,7 @@ import { Image } from 'astro:assets';
 import Icono from './Icono.astro';
 import { site } from '../data/site';
 import { paquetes } from '../data/paquetes';
-import { waLink, precio } from '../lib/formato';
+import { waLink, precio, ruta } from '../lib/formato';
 import barberia from '../assets/ejemplos/barberia.webp';
 import cabanasMovil from '../assets/ejemplos/cabanas-movil.webp';
 
@@ -47,7 +47,7 @@ const desde = Math.min(...paquetes.map((p) => p.desde));
     </div>
 
     <figure class="escena relative mx-auto w-full max-w-[40rem] pb-10 lg:pb-0">
-      <a href="/demos/barberia/" class="navegador block" aria-label="Ver la página de ejemplo de Filo Barbería">
+      <a href={ruta('/demos/barberia/')} class="navegador block" aria-label="Ver la página de ejemplo de Filo Barbería">
         <span class="flex items-center gap-3 px-4 py-3" aria-hidden="true">
           <span class="flex gap-1.5">
             <i class="size-2.5 rounded-full bg-[#ff5f57]"></i>
@@ -69,7 +69,7 @@ const desde = Math.min(...paquetes.map((p) => p.desde));
         />
       </a>
 
-      <a href="/demos/cabanas/" class="telefono absolute -bottom-2 -left-3 w-[31%] sm:-left-8 lg:-bottom-10" aria-label="Ver la página de ejemplo de Refugio Los Coihues">
+      <a href={ruta('/demos/cabanas/')} class="telefono absolute -bottom-2 -left-3 w-[31%] sm:-left-8 lg:-bottom-10" aria-label="Ver la página de ejemplo de Refugio Los Coihues">
         <Image
           src={cabanasMovil}
           alt="Página de ejemplo de unas cabañas vista en un celular"

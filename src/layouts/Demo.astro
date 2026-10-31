@@ -4,7 +4,7 @@
 import Base from './Base.astro';
 import Logo from '../components/Logo.astro';
 import { site } from '../data/site';
-import { waLink } from '../lib/formato';
+import { waLink, ruta } from '../lib/formato';
 
 interface Props {
   nombre: string;
@@ -29,7 +29,7 @@ const msg = `Hola, vi el ejemplo de ${nombre} (${rubro.toLowerCase()}) en ${site
   <div class="aviso-demo">
     <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-4 px-4 py-2 md:px-8">
       <p class="flex min-w-0 items-center gap-2.5">
-        <a href="/" aria-label={`Ir a ${site.nombre}`} class="shrink-0"><Logo claro soloIcono class="scale-[0.7]" /></a>
+        <a href={ruta('/')} aria-label={`Ir a ${site.nombre}`} class="shrink-0"><Logo claro soloIcono class="scale-[0.7]" /></a>
         <span class="truncate">
           <span class="hidden sm:inline">Ejemplo de página para {rubro.toLowerCase()}, armado por {site.nombre}. </span>
           <span class="sm:hidden">Ejemplo de {site.nombre}. </span>
@@ -37,7 +37,7 @@ const msg = `Hola, vi el ejemplo de ${nombre} (${rubro.toLowerCase()}) en ${site
         </span>
       </p>
       <div class="flex shrink-0 items-center gap-4">
-        <a href="/#ejemplos" class="hidden text-white/75 hover:text-white md:inline">Ver otros ejemplos</a>
+        <a href={ruta('/#ejemplos')} class="hidden text-white/75 hover:text-white md:inline">Ver otros ejemplos</a>
         <a href={waLink(site.whatsapp, msg)} class="cta-demo">Quiero una así</a>
       </div>
     </div>

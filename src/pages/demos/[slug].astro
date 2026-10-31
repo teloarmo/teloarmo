@@ -8,7 +8,7 @@ import Foto from '../../components/negocio/Foto.astro';
 import MiniMapa from '../../components/negocio/MiniMapa.astro';
 import { negocios, type Negocio as TNegocio } from '../../data/negocios';
 import { site } from '../../data/site';
-import { waLink, precio } from '../../lib/formato';
+import { waLink, precio, ruta } from '../../lib/formato';
 
 export function getStaticPaths() {
   return negocios.map((negocio) => ({ params: { slug: negocio.slug }, props: { negocio } }));
@@ -18,7 +18,7 @@ interface Props {
   negocio: TNegocio;
 }
 const { negocio: n } = Astro.props;
-const catalogo = `/demos/${n.slug}/catalogo/`;
+const catalogo = ruta(`/demos/${n.slug}/catalogo/`);
 const msgDemo = `Hola, vi el ejemplo de ${n.nombre} en ${site.nombre} y me gustaría una página así para mi negocio.`;
 const linkWa = waLink(n.ficticio ? site.whatsapp : n.whatsapp, n.ficticio ? msgDemo : 'Hola, tengo una consulta.');
 
