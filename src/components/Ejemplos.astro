@@ -7,7 +7,7 @@ import { demos } from '../data/demos';
 import { ruta } from '../lib/formato';
 ---
 
-<section id="ejemplos" class="py-24 lg:py-32">
+<section id="ejemplos" class="py-16 sm:py-24 lg:py-32">
   <div class="wrap">
     <div class="flex flex-wrap items-end justify-between gap-6">
       <div>
@@ -20,7 +20,7 @@ import { ruta } from '../lib/formato';
       </p>
     </div>
 
-    <ul class="bento mt-14 grid gap-5 md:grid-cols-6">
+    <ul class="bento mt-10 sm:mt-14 grid gap-5 md:grid-cols-6">
       {
         demos.map((d, i) => (
           <li class:list={['revelar', i < 2 ? 'md:col-span-3' : 'md:col-span-2']} style={`--retraso:${i * 70}ms`}>

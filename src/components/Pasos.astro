@@ -30,7 +30,7 @@ const pasos: { icono: NombreIcono; titulo: string; texto: string }[] = [
 ];
 ---
 
-<section id="como-trabajamos" class="py-24 lg:py-32">
+<section id="como-trabajamos" class="py-16 sm:py-24 lg:py-32">
   <div class="wrap">
     <div class="revelar flex flex-wrap items-end justify-between gap-6">
       <div>
@@ -39,17 +39,17 @@ const pasos: { icono: NombreIcono; titulo: string; texto: string }[] = [
       </div>
       <p class="max-w-[38ch] text-gris">Cinco pasos simples. Tú te ocupas de tu negocio; nosotros, de todo lo técnico.</p>
     </div>
-    <ol class="ruta mt-14 grid gap-4 lg:grid-cols-5">
+    <ol class="ruta mt-10 sm:mt-14 grid gap-4 lg:grid-cols-5">
       {
         pasos.map((p, i) => (
-          <li class="paso revelar relative rounded-2xl p-6" style={`--retraso:${i * 90}ms`}>
+          <li class="paso revelar relative rounded-2xl p-5 sm:p-6" style={`--retraso:${i * 90}ms`}>
             <div class="flex items-center justify-between">
               <span class="flex size-11 items-center justify-center rounded-xl bg-azul text-white">
                 <Icono nombre={p.icono} class="size-5" />
               </span>
-              <span class="font-display text-4xl font-bold text-linea">0{i + 1}</span>
+              <span class="font-display text-3xl font-bold text-linea sm:text-4xl">0{i + 1}</span>
             </div>
-            <h3 class="mt-6 text-xl leading-snug font-bold">{p.titulo}</h3>
+            <h3 class="mt-4 text-xl leading-snug font-bold sm:mt-6">{p.titulo}</h3>
             <p class="mt-2 text-base text-gris">{p.texto}</p>
           </li>
         ))

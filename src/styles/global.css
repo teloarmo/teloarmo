@@ -33,6 +33,15 @@
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
+  /* En celular todo se mide un poco más chico (las medidas van en rem). */
+  @media (max-width: 639px) {
+    html {
+      font-size: 93.75%;
+    }
+    body {
+      font-size: 1.0625rem;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -85,7 +94,7 @@
   .titulo {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2rem, 3.8vw, 2.9rem);
+    font-size: clamp(1.75rem, 3.8vw, 2.9rem);
     line-height: 1.02;
     letter-spacing: -0.03em;
   }

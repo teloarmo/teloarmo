@@ -5,7 +5,7 @@ import { site } from '../data/site';
 import { precio, waLink } from '../lib/formato';
 ---
 
-<section id="precios" class="bg-suave py-24 lg:py-32">
+<section id="precios" class="bg-suave py-16 sm:py-24 lg:py-32">
   <div class="wrap">
     <div class="revelar text-center">
       <p class="antetitulo">Precios</p>
@@ -15,10 +15,10 @@ import { precio, waLink } from '../lib/formato';
       </p>
     </div>
 
-    <div class="mt-14 grid gap-5 lg:grid-cols-3 lg:items-stretch">
+    <div class="mt-10 sm:mt-14 grid gap-5 lg:grid-cols-3 lg:items-stretch">
       {
         paquetes.map((p, i) => (
-          <article class:list={['plan revelar flex flex-col rounded-3xl p-8', { destacado: p.destacado }]} style={`--retraso:${i * 100}ms`}>
+          <article class:list={['plan revelar flex flex-col rounded-3xl p-6 sm:p-8', { destacado: p.destacado }]} style={`--retraso:${i * 100}ms`}>
             <div class="flex items-center justify-between gap-3">
               <h3 class="font-display text-[1.75rem] leading-none font-bold tracking-[-0.03em]">{p.nombre}</h3>
               {p.destacado && <span class="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold whitespace-nowrap">Recomendado</span>}
